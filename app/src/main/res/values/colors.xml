@@ -10,6 +10,7 @@
     <color name="widget_up">#FF12783A</color>
 
     <color name="window_background">#FFFAFAF9</color>
+    <color name="ic_launcher_background">#FF000000</color>
     <color name="shortcut_background">#FFD4ECEA</color>
     <color name="shortcut_foreground">#FF0F6E6E</color>
 </resources>

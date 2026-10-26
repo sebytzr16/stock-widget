@@ -69,8 +69,6 @@ data class HomeUi(
     val sort: SortMode = SortMode.CUSTOM,
 )
 
-data class RangeBar(val low: String, val high: String, val fraction: Float)
-
 data class PositionUi(
     val holding: String,
     val avgCost: String,
@@ -98,8 +96,10 @@ data class DetailUi(
     val previousClose: String,
     val volume: String,
     val exchange: String,
-    val dayRange: RangeBar?,
-    val yearRange: RangeBar?,
+    val dayHigh: String,
+    val dayLow: String,
+    val yearHigh: String,
+    val yearLow: String,
     val canHold: Boolean,
     val holding: Holding?,
     val position: PositionUi?,
@@ -215,8 +215,10 @@ object Ui {
             previousClose = q?.previousClose?.takeIf { it > 0.0 }?.let { Fmt.price(it, q.currency, q.priceHint) } ?: DASH,
             volume = q?.volume?.takeIf { it > 0L }?.let { Fmt.compact(it) } ?: DASH,
             exchange = q?.exchange?.takeIf { it.isNotBlank() } ?: DASH,
-            dayRange = q?.let { rangeBar(it, it.dayLow, it.dayHigh) },
-            yearRange = q?.let { rangeBar(it, it.yearLow, it.yearHigh) },
+            dayHigh = priceOrDash(q, q?.dayHigh),
+            dayLow = priceOrDash(q, q?.dayLow),
+            yearHigh = priceOrDash(q, q?.yearHigh),
+            yearLow = priceOrDash(q, q?.yearLow),
             canHold = !(q?.isIndex ?: symbol.startsWith("^")) && q?.isCurrency != true,
             holding = holding,
             position = position,
@@ -339,11 +341,8 @@ object Ui {
         return quotes.firstOrNull { !it.isCrypto && !it.isCurrency } ?: quotes.firstOrNull()
     }
 
-    private fun rangeBar(q: Quote, low: Double, high: Double): RangeBar? {
-        if (low <= 0.0 || high <= 0.0 || high < low) return null
-        val fraction = if (high - low < 1e-12) 0.5f else ((q.price - low) / (high - low)).toFloat().coerceIn(0f, 1f)
-        return RangeBar(Fmt.price(low, q.currency, q.priceHint), Fmt.price(high, q.currency, q.priceHint), fraction)
-    }
+    private fun priceOrDash(q: Quote?, value: Double?): String =
+        if (q == null || value == null || value <= 0.0) DASH else Fmt.price(value, q.currency, q.priceHint)
 
     private fun price(q: Quote?, value: Double): String =
         if (q == null) Fmt.number(value, 2) else Fmt.price(value, q.currency, q.priceHint)

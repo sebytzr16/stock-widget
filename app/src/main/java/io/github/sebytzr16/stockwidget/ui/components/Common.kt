@@ -10,12 +10,10 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,13 +26,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.sebytzr16.stockwidget.ui.RangeBar
 import io.github.sebytzr16.stockwidget.ui.theme.LocalPalette
 
 @Composable
@@ -72,33 +68,6 @@ fun LabeledValue(label: String, value: String, modifier: Modifier = Modifier, va
     Column(modifier) {
         Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(value, style = MaterialTheme.typography.bodyLarge, color = valueColor, maxLines = 1, overflow = TextOverflow.Ellipsis)
-    }
-}
-
-/** Day / 52-week range: a thin track with a marker at the current price. */
-@Composable
-fun RangeBarView(label: String, bar: RangeBar, modifier: Modifier = Modifier) {
-    val track = MaterialTheme.colorScheme.surfaceContainerHigh
-    val marker = MaterialTheme.colorScheme.onSurface
-    Column(modifier.fillMaxWidth()) {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        BoxWithConstraints(Modifier.fillMaxWidth().padding(vertical = 10.dp).height(14.dp)) {
-            Box(
-                Modifier.align(Alignment.CenterStart).fillMaxWidth().height(4.dp)
-                    .clip(RoundedCornerShape(2.dp)).background(track)
-            )
-            Box(
-                Modifier.align(Alignment.CenterStart)
-                    .offset(x = (maxWidth - 4.dp) * bar.fraction)
-                    .size(width = 4.dp, height = 14.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(marker)
-            )
-        }
-        Row(Modifier.fillMaxWidth()) {
-            Text(bar.low, style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f))
-            Text(bar.high, style = MaterialTheme.typography.labelMedium)
-        }
     }
 }
 

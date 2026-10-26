@@ -106,8 +106,10 @@
     <string name="previous_close">Previous close</string>
     <string name="volume">Volume</string>
     <string name="exchange">Exchange</string>
-    <string name="day_range">Day range</string>
-    <string name="year_range">52-week range</string>
+    <string name="day_high">Day high</string>
+    <string name="day_low">Day low</string>
+    <string name="year_high">52-week high</string>
+    <string name="year_low">52-week low</string>
     <string name="notes">Notes</string>
     <string name="note_hint">Add a note: why you bought it, a target price…</string>
     <string name="add">Add</string>

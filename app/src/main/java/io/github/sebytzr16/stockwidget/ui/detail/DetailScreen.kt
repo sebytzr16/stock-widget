@@ -82,7 +82,6 @@ import io.github.sebytzr16.stockwidget.ui.components.AppIcon
 import io.github.sebytzr16.stockwidget.ui.components.CardTitle
 import io.github.sebytzr16.stockwidget.ui.components.LabeledValue
 import io.github.sebytzr16.stockwidget.ui.components.PriceChart
-import io.github.sebytzr16.stockwidget.ui.components.RangeBarView
 import io.github.sebytzr16.stockwidget.ui.components.RowDivider
 import io.github.sebytzr16.stockwidget.ui.components.SectionCard
 import io.github.sebytzr16.stockwidget.ui.components.trendColor
@@ -360,20 +359,28 @@ private fun PositionCard(d: DetailUi, onEdit: () -> Unit) {
     }
 }
 
+/** Today's numbers and the 52-week extremes, one plainly labelled value per row. */
 @Composable
 private fun StatsCard(d: DetailUi) {
+    val rows = listOf(
+        R.string.open to d.open,
+        R.string.previous_close to d.previousClose,
+        R.string.day_high to d.dayHigh,
+        R.string.day_low to d.dayLow,
+        R.string.year_high to d.yearHigh,
+        R.string.year_low to d.yearLow,
+        R.string.volume to d.volume,
+        R.string.exchange to d.exchange,
+    )
     SectionCard {
         CardTitle(stringResource(R.string.key_stats))
-        Row(Modifier.padding(top = 4.dp)) {
-            LabeledValue(stringResource(R.string.open), d.open, Modifier.weight(1f))
-            LabeledValue(stringResource(R.string.previous_close), d.previousClose, Modifier.weight(1f))
+        rows.forEachIndexed { i, (label, value) ->
+            if (i > 0) RowDivider()
+            Row(Modifier.fillMaxWidth().heightIn(min = 44.dp).padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+                Text(value, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+            }
         }
-        Row(Modifier.padding(top = 12.dp)) {
-            LabeledValue(stringResource(R.string.volume), d.volume, Modifier.weight(1f))
-            LabeledValue(stringResource(R.string.exchange), d.exchange, Modifier.weight(1f))
-        }
-        d.dayRange?.let { RangeBarView(stringResource(R.string.day_range), it, Modifier.padding(top = 16.dp)) }
-        d.yearRange?.let { RangeBarView(stringResource(R.string.year_range), it, Modifier.padding(top = 12.dp)) }
     }
 }
 

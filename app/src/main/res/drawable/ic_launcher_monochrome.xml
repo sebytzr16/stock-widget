@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Themed-icon layer (Android 13+): the line and dot only. -->
+<!-- Themed-icon layer (Android 13+): the same line, dot and baseline as the launcher icon. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -7,12 +7,18 @@
     android:viewportHeight="108">
     <path
         android:fillColor="#00000000"
-        android:pathData="M32,66 L42,57 L51,61 L62,48 L72,40"
+        android:pathData="M34,68 L46,58 L56,64 L74,42"
         android:strokeWidth="5"
         android:strokeColor="#FF000000"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
     <path
         android:fillColor="#FF000000"
-        android:pathData="M67.5,40 a4.5,4.5 0 1,0 9.0,0 a4.5,4.5 0 1,0 -9.0,0" />
+        android:pathData="M74,42 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M34,76 L74,76"
+        android:strokeWidth="3"
+        android:strokeColor="#80000000"
+        android:strokeLineCap="round" />
 </vector>

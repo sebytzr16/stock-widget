@@ -66,4 +66,14 @@ The app is ready for both: no proprietary dependencies, no Google services, depe
 - **IzzyOnDroid** picks up APKs from GitHub releases. Once there is a regular (non-preview) release, request inclusion by following the instructions at <https://apt.izzysoft.de/fdroid/index/info>.
 - **F-Droid** builds apps from source. Open a request in the [requests-for-packaging](https://gitlab.com/fdroid/rfp/-/issues) tracker, or submit a merge request to [fdroiddata](https://gitlab.com/fdroid/fdroiddata) with build metadata for the `io.github.sebytzr16.stockwidget` application ID. Expect F-Droid to flag the app with the *NonFreeNet* anti-feature, because prices come from Yahoo Finance.
 
-Adding a few phone screenshots to `fastlane/metadata/android/en-US/images/phoneScreenshots/` (as `1.png`, `2.png`, …) makes both listings much better.
+## Screenshots
+
+The README and store screenshots in `fastlane/metadata/android/en-US/images/phoneScreenshots/` come from the **Screenshots** workflow (**Actions → Screenshots → Run workflow**). It boots an emulator, loads the sample list in `scripts/screenshot-data.json`, takes the shots with `scripts/screenshots.sh` and pushes them to the `screenshots` branch. To use them, copy that folder from the branch into `main`:
+
+```sh
+git fetch origin screenshots
+git checkout origin/screenshots -- fastlane/metadata/android/en-US/images/phoneScreenshots
+git commit -m "Update screenshots"
+```
+
+Prices in the shots are live, so take them while the US market is open.

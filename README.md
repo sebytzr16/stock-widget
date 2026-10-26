@@ -10,6 +10,13 @@ A light, fast Android app and set of home-screen widgets for keeping an eye on s
 - **Gentle on battery.** Background refreshes run only while the markets you follow are open (crypto keeps going), and every refresh is shared by the app and all widgets.
 - **Made for Android.** Material 3, Light, Dark or System theme, a pure black option for OLED, wallpaper colors on Android 12+, a two-pane layout on tablets and foldables, and app-icon shortcuts.
 
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="24%" alt="Home: your list with prices, today's change and sparklines">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="24%" alt="A stock's detail page with today's chart and your position">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="24%" alt="Widgets: stock list, ticker strip and chart">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="24%" alt="Home in the dark theme">
+</p>
+
 Prices come from Yahoo Finance's public endpoints and may be delayed. The app is for information only and is not investment advice.
 
 ## Install
@@ -30,6 +37,11 @@ Listings on F-Droid and IzzyOnDroid are planned.
 | Chart | 4×2 | A large intraday chart for one stock |
 
 Long-press a placed widget and choose **Reconfigure** (Android 12+) to change its stocks, or tap an empty widget to pick them.
+
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="32%" alt="Stock list, ticker strip and chart widgets">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" width="32%" alt="Portfolio, two-stock and one-stock widgets">
+</p>
 
 ## Privacy
 

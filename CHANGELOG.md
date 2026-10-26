@@ -11,5 +11,6 @@ The first release of the rebuilt app.
 - Six widgets: stock list, one stock, two stocks, ticker strip, portfolio and chart. They follow the system theme and can be reconfigured.
 - Light, Dark and System themes, pure black, and wallpaper colors on Android 12+.
 - Tablet and foldable two-pane layout, app-icon shortcuts and haptic feedback.
+- One-day charts follow the trading day: the line fills in across the session, and before the open they show the last session instead of nothing.
 - Smarter background refresh that pauses while markets are closed.
 - Fixes from the previous version: prices are no longer cleared when a refresh fails, London prices in pence are shown correctly, very small prices keep their digits, numbers follow your locale, and today's change is measured from the previous close.
