@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0
 
 - Each widget can have its own theme (System, Light, Dark or Black), chosen when you add it or reconfigure it. Pure black widgets now have a faint outline so they stay visible on a black wallpaper.
 - Widgets show the open and previous close as "O" and "P" so the prices fit, and their charts are larger.
