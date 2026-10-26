@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and lower: back up the list, holdings, alerts, notes and settings; prices are refetched. -->
+<full-backup-content>
+    <include
+        domain="file"
+        path="data/user.json" />
+</full-backup-content>

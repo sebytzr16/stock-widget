@@ -1,0 +1,40 @@
+<p>Stock Widget keeps an eye on stocks, ETFs, indices and crypto for you, in the app and right on your home screen. No account, no ads, no tracking.</p>
+
+<p><b>Your list at a glance</b></p>
+<ul>
+<li>Prices, today's change in percent and amount, and a sparkline for every stock</li>
+<li>Indices strip, market status and a portfolio summary</li>
+<li>Sort by name, change, price or position value; pin favorites to the top</li>
+</ul>
+
+<p><b>Six widgets</b></p>
+<ul>
+<li>Stock list, one stock, two stocks, a 4×1 ticker strip, portfolio, and a big chart</li>
+<li>Follow the system's light or dark theme, with open and previous close</li>
+<li>Pick any stock for a widget, and reconfigure it any time</li>
+</ul>
+
+<p><b>Details that answer questions</b></p>
+<ul>
+<li>Charts from 1 day to all time, with drag-to-inspect</li>
+<li>Key stats, day and 52-week ranges, pre- and after-hours prices</li>
+<li>News headlines and your own notes</li>
+<li>Share a stock as an image card or text</li>
+</ul>
+
+<p><b>Portfolio and alerts</b></p>
+<ul>
+<li>Add shares and average cost to see value, today's change and total return</li>
+<li>Totals converted into one home currency</li>
+<li>Alerts when a stock crosses a price or moves a set percentage in a day</li>
+</ul>
+
+<p><b>Light on your phone</b></p>
+<ul>
+<li>Background refresh only while the markets you follow are open</li>
+<li>A small app with few dependencies</li>
+<li>Material 3 with Light, Dark and System themes, pure black for OLED, and wallpaper colors</li>
+<li>Two-pane layout on tablets and foldables, app-icon shortcuts</li>
+</ul>
+
+<p>Prices come from Yahoo Finance and may be delayed. For information only, not investment advice. Stock Widget is not affiliated with Yahoo.</p>

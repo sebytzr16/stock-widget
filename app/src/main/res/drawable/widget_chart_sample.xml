@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A sample price line, shown in widget previews before real data is drawn. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="44dp"
+    android:viewportWidth="96"
+    android:viewportHeight="44">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M2,30 L10,27 L18,31 L26,24 L34,26 L42,19 L50,22 L58,15 L66,18 L74,11 L82,13 L94,7"
+        android:strokeWidth="2"
+        android:strokeColor="#1E9E4A"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

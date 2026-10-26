@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed-icon layer (Android 13+): the line and dot only. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M32,66 L42,57 L51,61 L62,48 L72,40"
+        android:strokeWidth="5"
+        android:strokeColor="#FF000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M67.5,40 a4.5,4.5 0 1,0 9.0,0 a4.5,4.5 0 1,0 -9.0,0" />
+</vector>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_bg">#FFFFFFFF</color>
+    <!-- Pure black only applies in dark mode; in light mode it is the regular background. -->
+    <color name="widget_bg_black">#FFFFFFFF</color>
+    <color name="widget_bg_dynamic">#FFFFFFFF</color>
+    <color name="widget_text">#FF141615</color>
+    <color name="widget_text2">#FF575C5A</color>
+    <color name="widget_divider">#14000000</color>
+    <color name="widget_up">#FF12783A</color>
+
+    <color name="window_background">#FFFAFAF9</color>
+    <color name="shortcut_background">#FFD4ECEA</color>
+    <color name="shortcut_foreground">#FF0F6E6E</color>
+</resources>

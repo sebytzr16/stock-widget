@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_bg">#FF1C1F1E</color>
+    <color name="widget_bg_black">#FF000000</color>
+    <color name="widget_bg_dynamic">#FF1C1F1E</color>
+    <color name="widget_text">#FFECEEED</color>
+    <color name="widget_text2">#FFA6ACA9</color>
+    <color name="widget_divider">#1FFFFFFF</color>
+    <color name="widget_up">#FF45C97A</color>
+
+    <color name="window_background">#FF0E1010</color>
+    <color name="shortcut_background">#FF163F3D</color>
+    <color name="shortcut_foreground">#FFB2EEEA</color>
+</resources>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A rising price line over the previous close, as drawn in the app's charts. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M32,66 L42,57 L51,61 L62,48 L72,40 L72,76 L32,76 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endColor="#0045C97A"
+                android:endX="54"
+                android:endY="76"
+                android:startColor="#6645C97A"
+                android:startX="54"
+                android:startY="40"
+                android:type="linear" />
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M32,66h3 M39,66h3 M46,66h3 M53,66h3 M60,66h3 M67,66h3 M74,66h2"
+        android:strokeWidth="2"
+        android:strokeColor="#6645C97A"
+        android:strokeLineCap="round" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M32,66 L42,57 L51,61 L62,48 L72,40"
+        android:strokeWidth="5"
+        android:strokeColor="#FF45C97A"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="#3345C97A"
+        android:pathData="M64.5,40 a7.5,7.5 0 1,0 15.0,0 a7.5,7.5 0 1,0 -15.0,0" />
+    <path
+        android:fillColor="#FF45C97A"
+        android:pathData="M67.5,40 a4.5,4.5 0 1,0 9.0,0 a4.5,4.5 0 1,0 -9.0,0" />
+</vector>

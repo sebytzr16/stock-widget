@@ -1,0 +1,1 @@
+First release of the rebuilt app: new home with indices and portfolio, detailed charts from 1D to Max, holdings, price alerts, notes, news, six widgets that follow the system theme, pure black and wallpaper colors, and a tablet layout.

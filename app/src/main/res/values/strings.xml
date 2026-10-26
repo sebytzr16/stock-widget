@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stock Widget</string>
+    <string name="source_url" translatable="false">https://github.com/sebytzr16/stock-widget</string>
+
+    <!-- Home -->
+    <string name="title_stocks">Stocks</string>
+    <string name="refresh">Refresh</string>
+    <string name="settings">Settings</string>
+    <string name="search_hint">Search stocks, ETFs, crypto</string>
+    <string name="watchlist">Watchlist</string>
+    <string name="portfolio">Portfolio</string>
+    <string name="portfolio_partial">Some holdings are missing an exchange rate</string>
+    <string name="today">Today</string>
+    <string name="total_return">Total return</string>
+    <string name="edit">Edit</string>
+    <string name="pinned">Pinned</string>
+    <string name="empty_title">Your list is empty</string>
+    <string name="empty_text">Search for stocks, ETFs, indices or crypto, or start with one of these.</string>
+    <string name="source">Data: Yahoo Finance</string>
+    <string name="updated">Updated %1$s</string>
+    <string name="offline_since">Offline · last updated %1$s</string>
+    <string name="pre_market">Pre-market</string>
+    <string name="after_hours">After hours</string>
+    <string name="unit_share">share</string>
+    <string name="unit_shares">shares</string>
+    <string name="market">Market</string>
+
+    <!-- Market status -->
+    <string name="status_always">Trades around the clock</string>
+    <string name="status_open">%1$s open · closes in %2$s</string>
+    <string name="status_pre">%1$s pre-market · opens in %2$s</string>
+    <string name="status_post">%1$s after hours</string>
+    <string name="status_closed">%1$s closed</string>
+    <string name="status_closed_in">%1$s closed · opens in %2$s</string>
+    <string name="status_closed_at">%1$s closed · opens %2$s</string>
+    <string name="duration_hm">%1$dh %2$dm</string>
+    <string name="duration_m">%1$dm</string>
+
+    <!-- Sorting -->
+    <string name="sort_by">Sort: %1$s</string>
+    <string name="sort_title">Sort list</string>
+    <string name="sort_custom">Custom</string>
+    <string name="sort_name">Name</string>
+    <string name="sort_change">Change</string>
+    <string name="sort_price">Price</string>
+    <string name="sort_value">Value</string>
+    <string name="sort_option_name">Name (A–Z)</string>
+    <string name="sort_option_change">Today\'s change</string>
+    <string name="sort_option_value">Position value</string>
+    <string name="sort_pinned_note">Pinned stocks always stay on top.</string>
+
+    <!-- Edit mode -->
+    <string name="title_edit">Edit list</string>
+    <string name="edit_hint">Drag to reorder</string>
+    <string name="edit_footer">Pinned stocks stay on top and appear as shortcuts when you long-press the app icon.</string>
+    <string name="done">Done</string>
+    <string name="reorder">Reorder %1$s</string>
+    <string name="move_up">Move up</string>
+    <string name="move_down">Move down</string>
+    <string name="pin">Pin %1$s</string>
+    <string name="unpin">Unpin %1$s</string>
+    <string name="remove_stock">Remove %1$s</string>
+
+    <!-- Search -->
+    <string name="back">Back</string>
+    <string name="clear_search">Clear search</string>
+    <string name="popular">Popular</string>
+    <string name="search_offline_title">You\'re offline</string>
+    <string name="search_offline_text">Search needs a connection. Check it and try again.</string>
+    <string name="search_none_title">No matches for “%1$s”</string>
+    <string name="search_none_text">Try the ticker, like AAPL, or a company name.</string>
+    <string name="in_list">%1$s is in your list</string>
+    <string name="add_symbol">Add %1$s</string>
+    <string name="type_stock">Stock</string>
+    <string name="type_etf">ETF</string>
+    <string name="type_index">Index</string>
+    <string name="type_fund">Fund</string>
+    <string name="type_currency">Currency</string>
+    <string name="type_crypto">Crypto</string>
+    <string name="type_future">Future</string>
+
+    <!-- Detail -->
+    <string name="no_data">No price data yet</string>
+    <string name="ext_pre_detail">Pre-market: %1$s  %2$s</string>
+    <string name="ext_after_detail">After hours: %1$s  %2$s</string>
+    <string name="chart_failed">Couldn\'t load the chart. Check your connection.</string>
+    <string name="chart_empty">No chart for this period</string>
+    <string name="range_today">Today</string>
+    <string name="range_week">Past week</string>
+    <string name="range_month">Past month</string>
+    <string name="range_3_months">Past 3 months</string>
+    <string name="range_6_months">Past 6 months</string>
+    <string name="range_ytd">Year to date</string>
+    <string name="range_year">Past year</string>
+    <string name="range_5_years">Past 5 years</string>
+    <string name="range_max">All time</string>
+    <string name="your_position">Your position</string>
+    <string name="position_empty">Add how much you own to see its value and your return.</string>
+    <string name="add_position">Add position</string>
+    <string name="holding">Holding</string>
+    <string name="avg_cost">Average cost</string>
+    <string name="market_value">Market value</string>
+    <string name="key_stats">Key stats</string>
+    <string name="open">Open</string>
+    <string name="previous_close">Previous close</string>
+    <string name="volume">Volume</string>
+    <string name="exchange">Exchange</string>
+    <string name="day_range">Day range</string>
+    <string name="year_range">52-week range</string>
+    <string name="notes">Notes</string>
+    <string name="note_hint">Add a note: why you bought it, a target price…</string>
+    <string name="add">Add</string>
+    <string name="news">News</string>
+    <string name="news_failed">Couldn\'t load news.</string>
+    <string name="news_none">No recent news.</string>
+    <string name="disclaimer_short">Data from Yahoo Finance, may be delayed. Not investment advice.</string>
+    <string name="nothing_selected">Select a stock to see its chart and details.</string>
+
+    <!-- Position sheet -->
+    <string name="field_shares">Number of shares</string>
+    <string name="field_amount">Amount (%1$s)</string>
+    <string name="field_avg_cost">Average cost per share</string>
+    <string name="field_avg_cost_coin">Average cost per coin</string>
+    <string name="field_avg_cost_hint">Current price: %1$s</string>
+    <string name="position_value_now">Worth %1$s now</string>
+    <string name="remove_position">Remove</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+
+    <!-- Alerts -->
+    <string name="price_alerts">Price alerts</string>
+    <string name="new_alert">New price alert</string>
+    <string name="alert_now">%1$s is at %2$s now</string>
+    <string name="alert_kind_above">Above</string>
+    <string name="alert_kind_below">Below</string>
+    <string name="alert_kind_move" formatted="false">Moves ±%</string>
+    <string name="field_price">Price</string>
+    <string name="field_move">Move from previous close</string>
+    <string name="alert_hint_price">Notifies you once, then turns off</string>
+    <string name="alert_hint_move">Notifies you at most once a day when %1$s moves this much</string>
+    <string name="alert_error_number">Enter a number</string>
+    <string name="alert_error_above">%1$s is already above this price</string>
+    <string name="alert_error_below">%1$s is already below this price</string>
+    <string name="alert_error_move" formatted="false">Enter a move of up to 100%</string>
+    <string name="create_alert">Create alert</string>
+    <string name="alert_above">Above %1$s</string>
+    <string name="alert_below">Below %1$s</string>
+    <string name="alert_move">Moves ±%1$s%% in a day</string>
+    <string name="alert_off">Off</string>
+    <string name="alert_once">Notifies once, then turns off</string>
+    <string name="alert_once_a_day">Notifies at most once a day</string>
+    <string name="alerts_empty">No alerts for %1$s yet.</string>
+    <string name="alerts_off_hint">Price alerts are turned off in Settings.</string>
+    <string name="delete_alert">Delete alert</string>
+    <string name="channel_alerts">Price alerts</string>
+    <string name="channel_alerts_description">When a stock crosses a price or moves a lot in a day</string>
+    <string name="alert_title_above">%1$s is above %2$s</string>
+    <string name="alert_title_below">%1$s is below %2$s</string>
+    <string name="alert_title_up">%1$s is up %2$s today</string>
+    <string name="alert_title_down">%1$s is down %2$s today</string>
+    <string name="alert_text">Now %1$s (%2$s today)</string>
+
+    <!-- Share -->
+    <string name="share">Share</string>
+    <string name="share_title">Share %1$s</string>
+    <string name="share_image">Share image</string>
+    <string name="share_image_hint">A card with today\'s chart</string>
+    <string name="share_as_text">Share as text</string>
+    <string name="copy_text">Copy text</string>
+    <string name="share_text">%1$s is at %2$s (%3$s today)</string>
+
+    <!-- Messages -->
+    <string name="msg_added">Added %1$s</string>
+    <string name="msg_removed">Removed %1$s</string>
+    <string name="undo">Undo</string>
+    <string name="msg_alert_created">Alert set for %1$s</string>
+    <string name="msg_copied">Copied</string>
+    <string name="msg_offline">You\'re offline. Showing the last prices.</string>
+    <string name="msg_notifications_denied">Notifications are off, so alerts can\'t reach you. You can allow them in Settings.</string>
+
+    <!-- Settings -->
+    <string name="group_appearance">Appearance</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="pure_black">Pure black</string>
+    <string name="pure_black_hint">In dark theme, for OLED screens</string>
+    <string name="wallpaper_colors">Wallpaper colors</string>
+    <string name="wallpaper_colors_hint">Use your wallpaper\'s accent in the app and widgets</string>
+    <string name="group_market">Market data</string>
+    <string name="home_currency">Home currency</string>
+    <string name="home_currency_hint">Portfolio totals are converted to it</string>
+    <string name="indices">Indices</string>
+    <string name="indices_hidden">Hidden</string>
+    <string name="indices_dialog_hint">Shown above your list. Pick up to %1$d.</string>
+    <string name="extended_hours">Pre- and after-hours prices</string>
+    <string name="extended_hours_hint">Shown in the app, for markets that report them</string>
+    <string name="group_refresh">Background refresh</string>
+    <string name="refresh_every">Refresh every</string>
+    <string name="refresh_every_hint">Keeps widgets and alerts up to date</string>
+    <string name="minutes_15">15 min</string>
+    <string name="minutes_30">30 min</string>
+    <string name="hour_1">1 hour</string>
+    <string name="only_when_open">Only while markets are open</string>
+    <string name="only_when_open_hint">Saves battery and data. Crypto keeps updating.</string>
+    <string name="group_alerts">Alerts</string>
+    <string name="price_alerts_hint">Get a notification when an alert triggers</string>
+    <string name="notifications_off">Notifications are off</string>
+    <string name="notifications_off_hint">Allow them so price alerts can reach you</string>
+    <string name="group_about">About</string>
+    <string name="version">Version</string>
+    <string name="source_code">Source code</string>
+    <string name="source_code_hint">github.com/sebytzr16/stock-widget</string>
+    <string name="license">License</string>
+    <string name="license_hint">MIT, free and open source</string>
+    <string name="privacy">Privacy</string>
+    <string name="privacy_hint">No accounts, no ads, no tracking</string>
+    <string name="disclaimer">Prices come from Yahoo Finance and may be delayed. For information only, not investment advice. Stock Widget is not affiliated with Yahoo.</string>
+
+    <!-- App-icon shortcuts -->
+    <string name="shortcut_search">Search</string>
+    <string name="shortcut_search_long">Search stocks</string>
+
+    <!-- Widgets -->
+    <string name="widget_name_list">Stock list</string>
+    <string name="widget_name_single">One stock</string>
+    <string name="widget_name_two">Two stocks</string>
+    <string name="widget_name_strip">Ticker strip</string>
+    <string name="widget_name_portfolio">Portfolio</string>
+    <string name="widget_name_chart">Chart</string>
+    <string name="widget_list_title">Stocks</string>
+    <string name="widget_list_empty">Open the app to add stocks</string>
+    <string name="widget_loading">Loading prices…</string>
+    <string name="widget_open_prev_close">Open %1$s · Prev close %2$s</string>
+    <string name="widget_pick_one">Tap to choose a stock</string>
+    <string name="widget_pick_many">Tap to choose stocks</string>
+    <string name="widget_portfolio_label">Portfolio · %1$s</string>
+    <string name="widget_partial">partial</string>
+    <string name="widget_portfolio_empty">Add your holdings in the app to see your portfolio here.</string>
+    <string name="widget_list_description">Your list with prices and today\'s charts</string>
+    <string name="widget_single_description">One stock with its price and chart</string>
+    <string name="widget_two_description">Two stocks, one above the other</string>
+    <string name="widget_strip_description">Up to four stocks in a single row</string>
+    <string name="widget_portfolio_description">Your portfolio\'s value and today\'s change</string>
+    <string name="widget_chart_description">A large chart of today for one stock</string>
+
+    <!-- Widget setup -->
+    <string name="setup_title_one">Choose a stock</string>
+    <plurals name="setup_title_many">
+        <item quantity="one">Choose up to %d stock</item>
+        <item quantity="other">Choose up to %d stocks</item>
+    </plurals>
+    <string name="setup_search_hint">Search any stock</string>
+    <string name="setup_your_list">Your list</string>
+    <string name="setup_empty">Your list is empty. Search for a stock to show.</string>
+    <string name="setup_count">%1$d of %2$d selected</string>
+    <string name="setup_done">Done</string>
+
+    <!-- Sample content for widget previews -->
+    <string name="widget_sample_symbol" translatable="false">AAPL</string>
+    <string name="widget_sample_name" translatable="false">Apple Inc.</string>
+    <string name="widget_sample_price" translatable="false">$227.48</string>
+    <string name="widget_sample_change" translatable="false" formatted="false">+1.24%</string>
+    <string name="widget_sample_change_full" translatable="false" formatted="false">+$2.79 (+1.24%)</string>
+    <string name="widget_sample_info" translatable="false">Open $225.10 · Prev close $224.69</string>
+    <string name="widget_sample_portfolio_label" translatable="false">Portfolio · USD</string>
+    <string name="widget_sample_portfolio_value" translatable="false">$12,480.20</string>
+    <string name="widget_sample_portfolio_day" translatable="false" formatted="false">+$151.06 (+1.22%)</string>
+    <string name="widget_sample_portfolio_total" translatable="false" formatted="false">+$2,310.75 (+22.72%)</string>
+</resources>

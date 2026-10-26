@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:clipToOutline="true"
+    android:padding="@dimen/widget_padding">
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/label"
+            style="@style/WidgetText.Label"
+            android:text="@string/widget_sample_portfolio_label" />
+
+        <TextView
+            android:id="@+id/value"
+            style="@style/WidgetText.BigPrice"
+            android:text="@string/widget_sample_portfolio_value" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/WidgetText.Info"
+                android:layout_width="wrap_content"
+                android:text="@string/today" />
+
+            <TextView
+                android:id="@+id/day"
+                style="@style/WidgetText.Change"
+                android:layout_marginStart="4dp"
+                android:text="@string/widget_sample_portfolio_day" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/WidgetText.Info"
+                android:layout_width="wrap_content"
+                android:text="@string/total_return" />
+
+            <TextView
+                android:id="@+id/total"
+                style="@style/WidgetText.Change"
+                android:layout_marginStart="4dp"
+                android:text="@string/widget_sample_portfolio_total" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:contentDescription="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/widget_chart_sample" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/empty"
+        style="@style/WidgetText.Hint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</FrameLayout>
