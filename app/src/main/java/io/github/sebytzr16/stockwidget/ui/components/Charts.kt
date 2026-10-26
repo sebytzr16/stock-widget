@@ -25,17 +25,22 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.sebytzr16.stockwidget.ui.theme.LocalPalette
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
-/** Small intraday line for list rows, with the previous close as a faint dashed baseline. */
+/**
+ * Small intraday line for list rows, with the previous close as a faint dashed baseline.
+ * [positions] place points on the session clock (see Series.sessionPositions).
+ */
 @Composable
-fun Sparkline(prices: List<Double>, baseline: Double?, up: Boolean, modifier: Modifier = Modifier) {
+fun Sparkline(prices: List<Double>, baseline: Double?, up: Boolean, modifier: Modifier = Modifier, positions: List<Float>? = null) {
     val palette = LocalPalette.current
     val color = if (up) palette.upLine else palette.downLine
     val baseColor = palette.text3
     Canvas(modifier) {
         drawPriceLine(
             prices = prices,
+            positions = positions,
             baseline = baseline,
             color = color,
             baseColor = baseColor,
@@ -50,6 +55,7 @@ fun Sparkline(prices: List<Double>, baseline: Double?, up: Boolean, modifier: Mo
 /**
  * The detail chart. Drag sideways to inspect points (reported through [onScrub], null when
  * released); each new point gives a light haptic tick. Vertical drags still scroll the page.
+ * With [positions], points sit at their time in the session instead of evenly spaced.
  */
 @Composable
 fun PriceChart(
@@ -59,6 +65,7 @@ fun PriceChart(
     up: Boolean,
     onScrub: (Int?) -> Unit,
     modifier: Modifier = Modifier,
+    positions: List<Float>? = null,
 ) {
     val palette = LocalPalette.current
     val color = if (up) palette.upLine else palette.downLine
@@ -70,12 +77,13 @@ fun PriceChart(
     val scrubbed by rememberUpdatedState(onScrub)
 
     Canvas(
-        modifier.pointerInput(prices) {
+        modifier.pointerInput(prices, positions) {
             if (prices.size < 2) return@pointerInput
             val pad = 16.dp.toPx()
             fun indexAt(x: Float): Int {
                 val f = ((x - pad) / (size.width - 2 * pad)).coerceIn(0f, 1f)
-                return (f * (prices.size - 1)).roundToInt()
+                if (positions == null || positions.size != prices.size) return (f * (prices.size - 1)).roundToInt()
+                return positions.indices.minBy { abs(positions[it] - f) }
             }
             fun pick(i: Int) {
                 if (i != selected) {
@@ -102,6 +110,7 @@ fun PriceChart(
     ) {
         val layout = drawPriceLine(
             prices = prices,
+            positions = positions,
             baseline = reference.takeIf { showReference },
             color = color,
             baseColor = baseColor,
@@ -121,14 +130,24 @@ fun PriceChart(
     }
 }
 
-/** Maps series indices and prices to canvas coordinates. */
-class ChartLayout(private val left: Float, private val width: Float, private val top: Float, private val height: Float, private val count: Int, private val min: Double, private val max: Double) {
-    fun x(i: Int): Float = left + width * i / (count - 1).coerceAtLeast(1)
+/** Maps series indices and prices to canvas coordinates; [positions] (0..1) override even spacing. */
+class ChartLayout(
+    private val left: Float,
+    private val width: Float,
+    private val top: Float,
+    private val height: Float,
+    private val count: Int,
+    private val min: Double,
+    private val max: Double,
+    private val positions: List<Float>? = null,
+) {
+    fun x(i: Int): Float = if (positions != null) left + width * positions[i] else left + width * i / (count - 1).coerceAtLeast(1)
     fun y(v: Double): Float = (top + height * (1 - (v - min) / (max - min))).toFloat()
 }
 
 private fun DrawScope.drawPriceLine(
     prices: List<Double>,
+    positions: List<Float>?,
     baseline: Double?,
     color: Color,
     baseColor: Color,
@@ -154,7 +173,7 @@ private fun DrawScope.drawPriceLine(
     }
     val px = padX.toPx()
     val py = padY.toPx()
-    val layout = ChartLayout(px, size.width - 2 * px, py, size.height - 2 * py, prices.size, min, max)
+    val layout = ChartLayout(px, size.width - 2 * px, py, size.height - 2 * py, prices.size, min, max, positions?.takeIf { it.size == prices.size })
 
     if (baseline != null && baseline > 0.0) {
         val y = layout.y(baseline)

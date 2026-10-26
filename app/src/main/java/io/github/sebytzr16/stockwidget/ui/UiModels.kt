@@ -13,6 +13,7 @@ import io.github.sebytzr16.stockwidget.core.MarketHours
 import io.github.sebytzr16.stockwidget.core.MarketPhase
 import io.github.sebytzr16.stockwidget.core.Portfolio
 import io.github.sebytzr16.stockwidget.core.Quote
+import io.github.sebytzr16.stockwidget.core.Series
 import io.github.sebytzr16.stockwidget.core.SortMode
 import io.github.sebytzr16.stockwidget.core.UserData
 import io.github.sebytzr16.stockwidget.core.WatchItem
@@ -33,6 +34,8 @@ data class StockRow(
     val extUp: Boolean,
     val holding: String?,
     val spark: List<Double>,
+    /** Where each sparkline point sits in its trading session (0..1), when known. */
+    val positions: List<Float>?,
     val baseline: Double?,
 )
 
@@ -274,6 +277,7 @@ object Ui {
                 quantity(context, q, holding.shares) + " · " + Fmt.money(p.value, p.currency)
             } else null,
             spark = q?.intraday?.map { it.price }.orEmpty(),
+            positions = q?.let { Series.sessionPositions(it.intraday, it.regular) },
             baseline = q?.previousClose?.takeIf { it > 0.0 },
         )
     }

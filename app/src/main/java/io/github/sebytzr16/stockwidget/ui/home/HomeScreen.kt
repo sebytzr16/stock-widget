@@ -343,7 +343,7 @@ fun StockCard(row: StockRow, selected: Boolean, onClick: () -> Unit, modifier: M
                     Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
                 }
             }
-            Sparkline(row.spark, row.baseline, row.up, Modifier.size(56.dp, 32.dp))
+            Sparkline(row.spark, row.baseline, row.up, Modifier.size(56.dp, 32.dp), row.positions)
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.widthIn(min = 96.dp)) {
                 Text(row.price, style = MaterialTheme.typography.titleMedium, maxLines = 1)
                 if (row.hasPrice) {

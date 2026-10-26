@@ -71,6 +71,7 @@ import io.github.sebytzr16.stockwidget.core.ChartRange
 import io.github.sebytzr16.stockwidget.core.Fmt
 import io.github.sebytzr16.stockwidget.core.MarketPhase
 import io.github.sebytzr16.stockwidget.core.SearchResult
+import io.github.sebytzr16.stockwidget.core.Series
 import io.github.sebytzr16.stockwidget.core.displaySymbol
 import io.github.sebytzr16.stockwidget.system.Notifier
 import io.github.sebytzr16.stockwidget.ui.AppViewModel
@@ -266,6 +267,9 @@ private fun ChartSection(d: DetailUi, chart: ChartLoad, range: ChartRange, onScr
         when (chart) {
             is ChartLoad.Ready -> {
                 val prices = remember(chart) { chart.series.points.map { it.price } }
+                val positions = remember(chart, range) {
+                    if (range == ChartRange.D1) Series.sessionPositions(chart.series.points, q?.regular) else null
+                }
                 val reference = chart.series.reference
                 PriceChart(
                     prices = prices,
@@ -274,6 +278,7 @@ private fun ChartSection(d: DetailUi, chart: ChartLoad, range: ChartRange, onScr
                     up = (q?.price ?: prices.last()) >= reference,
                     onScrub = onScrub,
                     modifier = Modifier.fillMaxSize(),
+                    positions = positions,
                 )
             }
             ChartLoad.Loading -> CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 2.5.dp)
@@ -283,12 +288,15 @@ private fun ChartSection(d: DetailUi, chart: ChartLoad, range: ChartRange, onScr
     }
     val points = (chart as? ChartLoad.Ready)?.series?.points
     if (points != null && points.size >= 2) {
+        // A one-day chart spans its whole session; other ranges span their points.
+        val session = if (range == ChartRange.D1) Series.sessionOf(points, q?.regular) else null
+        val times = if (session != null) listOf(session.start, (session.start + session.end) / 2, session.end)
+        else listOf(points.first().time, points[points.size / 2].time, points.last().time)
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)) {
-            Text(pointLabel(context, points.first().time, range, axis = true), style = MaterialTheme.typography.labelSmall, color = text3)
-            Spacer(Modifier.weight(1f))
-            Text(pointLabel(context, points[points.size / 2].time, range, axis = true), style = MaterialTheme.typography.labelSmall, color = text3)
-            Spacer(Modifier.weight(1f))
-            Text(pointLabel(context, points.last().time, range, axis = true), style = MaterialTheme.typography.labelSmall, color = text3)
+            times.forEachIndexed { i, t ->
+                if (i > 0) Spacer(Modifier.weight(1f))
+                Text(pointLabel(context, t, range, axis = true), style = MaterialTheme.typography.labelSmall, color = text3)
+            }
         }
     }
 }

@@ -160,4 +160,18 @@ class YahooParserTest {
         """.trimIndent()
         assertEquals(listOf(3.0, 4.0, 5.0), YahooParser.lastSession(YahooParser.parseChart(json)).map { it.price })
     }
+
+    @Test
+    fun oneDayPointsArePlacedOnTheSessionClock() {
+        val regular = Session(regStart * 1000, regEnd * 1000)
+        val span = (regEnd - regStart) * 1000
+        // An hour into today's session: the line covers the first part of the chart.
+        val morning = listOf(PricePoint(regStart * 1000, 1.0), PricePoint(regStart * 1000 + span / 4, 2.0))
+        assertEquals(listOf(0f, 0.25f), Series.sessionPositions(morning, regular))
+        // Friday's points before Monday's open sit on Friday's session.
+        val friday = morning.map { it.copy(time = it.time - 3 * 86_400_000L) }
+        assertEquals(Session(regular.start - 3 * 86_400_000L, regular.end - 3 * 86_400_000L), Series.sessionOf(friday, regular))
+        assertEquals(listOf(0f, 0.25f), Series.sessionPositions(friday, regular))
+        assertNull(Series.sessionPositions(morning, null))
+    }
 }

@@ -14,6 +14,7 @@ import io.github.sebytzr16.stockwidget.R
 import io.github.sebytzr16.stockwidget.core.Fmt
 import io.github.sebytzr16.stockwidget.core.PricePoint
 import io.github.sebytzr16.stockwidget.core.Quote
+import io.github.sebytzr16.stockwidget.core.Series
 import io.github.sebytzr16.stockwidget.widget.ChartBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -91,6 +92,7 @@ object ShareCard {
             width = (w - pad * 2).toInt(),
             height = 220,
             stroke = 5f,
+            positions = Series.sessionPositions(points, q.regular),
         )
         canvas.drawBitmap(chart, pad, 320f, null)
 

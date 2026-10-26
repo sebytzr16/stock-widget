@@ -16,6 +16,7 @@ import io.github.sebytzr16.stockwidget.core.Fmt
 import io.github.sebytzr16.stockwidget.core.MarketData
 import io.github.sebytzr16.stockwidget.core.Portfolio
 import io.github.sebytzr16.stockwidget.core.Quote
+import io.github.sebytzr16.stockwidget.core.Series
 import io.github.sebytzr16.stockwidget.core.Settings
 import io.github.sebytzr16.stockwidget.core.UserData
 import io.github.sebytzr16.stockwidget.core.displaySymbol
@@ -173,7 +174,8 @@ object WidgetRenderer {
         views.setTextViewText(R.id.updated, updated(context, m))
         val (w, h) = sizeDp(manager, id, 250, 110)
         val prices = q.intraday.map { it.price }
-        views.setImageViewBitmap(R.id.chart, chartBitmap(context, prices, q.previousClose.takeIf { it > 0.0 }, q.isUp, w - 32, (h - 96).coerceAtLeast(32), 2.25f))
+        val positions = Series.sessionPositions(q.intraday, q.regular)
+        views.setImageViewBitmap(R.id.chart, chartBitmap(context, prices, q.previousClose.takeIf { it > 0.0 }, q.isUp, w - 32, (h - 96).coerceAtLeast(32), 2.25f, positions))
         views.setViewVisibility(R.id.chart, View.VISIBLE)
         views.setContentDescription(android.R.id.background, describe(q))
         return views
@@ -197,7 +199,8 @@ object WidgetRenderer {
         views.setTextViewText(R.id.price, Fmt.price(q.price, q.currency, q.priceHint))
         views.setTextViewText(R.id.info, openPrevClose(context, q))
         val prices = q.intraday.map { it.price }
-        views.setImageViewBitmap(R.id.chart, chartBitmap(context, prices, q.previousClose.takeIf { it > 0.0 }, q.isUp, 96, 44, 1.75f))
+        val positions = Series.sessionPositions(q.intraday, q.regular)
+        views.setImageViewBitmap(R.id.chart, chartBitmap(context, prices, q.previousClose.takeIf { it > 0.0 }, q.isUp, 96, 44, 1.75f, positions))
         views.setViewVisibility(R.id.chart, View.VISIBLE)
         views.setContentDescription(R.id.block, describe(q))
     }
@@ -240,7 +243,16 @@ object WidgetRenderer {
         }
     }
 
-    private fun chartBitmap(context: Context, prices: List<Double>, baseline: Double?, up: Boolean, widthDp: Int, heightDp: Int, strokeDp: Float): Bitmap {
+    private fun chartBitmap(
+        context: Context,
+        prices: List<Double>,
+        baseline: Double?,
+        up: Boolean,
+        widthDp: Int,
+        heightDp: Int,
+        strokeDp: Float,
+        positions: List<Float>? = null,
+    ): Bitmap {
         val density = context.resources.displayMetrics.density
         return ChartBitmap.render(
             prices = prices,
@@ -249,6 +261,7 @@ object WidgetRenderer {
             width = (widthDp * density).toInt().coerceIn(2, MAX_BITMAP_SIDE),
             height = (heightDp * density).toInt().coerceIn(2, MAX_BITMAP_SIDE),
             stroke = strokeDp * density,
+            positions = positions,
         )
     }
 

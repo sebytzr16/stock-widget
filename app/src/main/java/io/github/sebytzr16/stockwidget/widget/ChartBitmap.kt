@@ -10,7 +10,8 @@ import android.graphics.Shader
 
 /**
  * Draws a price line with a soft fill into a [Bitmap] for RemoteViews and share cards. An
- * optional dashed [baseline] marks the previous close.
+ * optional dashed [baseline] marks the previous close; [positions] (0..1) place points on
+ * the session clock instead of evenly spaced.
  */
 object ChartBitmap {
 
@@ -26,6 +27,7 @@ object ChartBitmap {
         height: Int,
         stroke: Float,
         baselineColor: Int = 0x66888888,
+        positions: List<Float>? = null,
     ): Bitmap {
         val w = width.coerceAtLeast(2)
         val h = height.coerceAtLeast(2)
@@ -55,7 +57,8 @@ object ChartBitmap {
         }
         val chartW = w - pad * 2
         val chartH = h - pad * 2
-        fun x(i: Int) = pad + chartW * i / (prices.size - 1)
+        val at = positions?.takeIf { it.size == prices.size }
+        fun x(i: Int) = if (at != null) pad + chartW * at[i] else pad + chartW * i / (prices.size - 1)
         fun y(v: Double) = (pad + chartH * (1 - (v - min) / (max - min))).toFloat()
 
         if (baseline != null && baseline > 0.0) {
