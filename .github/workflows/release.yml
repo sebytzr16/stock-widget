@@ -97,9 +97,10 @@ jobs:
           } > notes.md
           flags=()
           if [ "$PREVIEW" = "true" ]; then flags+=(--prerelease); fi
-          # A preview can be published again under its tag; a regular release is never replaced.
+          # A preview is replaced by a later build under its tag, preview or signed (e.g. once the
+          # signing secrets are added); a regular release is never replaced.
           existing="$(gh release view "$TAG" --json isPrerelease --jq .isPrerelease 2>/dev/null || true)"
-          if [ "$PREVIEW" = "true" ] && [ "$existing" = "true" ]; then
+          if [ "$existing" = "true" ]; then
             gh release delete "$TAG" --yes --cleanup-tag
           fi
           gh release create "$TAG" "$APK" "$APK.sha256" \
