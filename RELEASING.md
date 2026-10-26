@@ -28,7 +28,7 @@ Android only installs an update if it's signed with the same key as the installe
    | `KEY_ALIAS` | the key alias, e.g. `stock-widget` |
    | `KEY_PASSWORD` | the key password (the same as the keystore password for PKCS12 keystores) |
 
-Until these secrets exist, the workflow still publishes, but signs with a one-off key that is thrown away and marks the release as a **preview**. Preview builds can't be updated in place: uninstall one before installing a regular release.
+Until these secrets exist, the workflow still publishes, but signs with a one-off key that is thrown away and marks the release as a **preview**. Preview builds can't be updated in place: uninstall one before installing a regular release. Once the secrets are added, running the workflow again with a preview's tag replaces that preview with a signed release.
 
 Never commit the keystore or its passwords. `.gitignore` already excludes `*.jks`, `*.keystore` and `keystore.properties`.
 
