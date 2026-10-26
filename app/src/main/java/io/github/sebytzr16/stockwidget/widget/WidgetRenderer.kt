@@ -13,6 +13,7 @@ import android.widget.RemoteViews
 import io.github.sebytzr16.stockwidget.MainActivity
 import io.github.sebytzr16.stockwidget.R
 import io.github.sebytzr16.stockwidget.core.Fmt
+import io.github.sebytzr16.stockwidget.core.Indices
 import io.github.sebytzr16.stockwidget.core.MarketData
 import io.github.sebytzr16.stockwidget.core.Portfolio
 import io.github.sebytzr16.stockwidget.core.Quote
@@ -106,7 +107,7 @@ object WidgetRenderer {
             if (i > 0) views.addView(R.id.content, RemoteViews(context.packageName, R.layout.widget_divider_vertical))
             val cell = RemoteViews(context.packageName, R.layout.widget_strip_cell)
             val q = m.quotes[symbol]?.takeIf { it.hasPrice }
-            cell.setTextViewText(R.id.symbol, displaySymbol(symbol))
+            cell.setTextViewText(R.id.symbol, label(symbol))
             if (q != null) {
                 cell.setTextViewText(R.id.price, Fmt.price(q.price, q.currency, q.priceHint))
                 cell.setTextViewText(R.id.change, Fmt.percent(q.changePercent))
@@ -158,7 +159,7 @@ object WidgetRenderer {
         views.setViewVisibility(R.id.empty, View.GONE)
         views.setOnClickPendingIntent(android.R.id.background, openSymbol(context, symbol))
         val q = m.quotes[symbol]?.takeIf { it.hasPrice }
-        views.setTextViewText(R.id.symbol, displaySymbol(symbol))
+        views.setTextViewText(R.id.symbol, label(symbol))
         views.setTextViewText(R.id.name, q?.name ?: u.items.firstOrNull { it.symbol == symbol }?.name.orEmpty())
         if (q == null) {
             views.setTextViewText(R.id.price, DASH)
@@ -186,7 +187,7 @@ object WidgetRenderer {
     /** Symbol and change, price, "Open · Prev close" and a small intraday chart. */
     fun fillBlock(context: Context, views: RemoteViews, symbol: String, quote: Quote?, fallbackName: String?) {
         val q = quote?.takeIf { it.hasPrice }
-        views.setTextViewText(R.id.symbol, displaySymbol(symbol))
+        views.setTextViewText(R.id.symbol, label(symbol))
         if (q == null) {
             views.setTextViewText(R.id.change, "")
             views.setTextViewText(R.id.price, DASH)
@@ -212,6 +213,9 @@ object WidgetRenderer {
         views.setOnClickPendingIntent(android.R.id.background, setup(context, id))
         return views
     }
+
+    /** Indices by their short name ("S&P 500"), everything else by its ticker. */
+    private fun label(symbol: String): String = Indices.short(symbol) ?: displaySymbol(symbol)
 
     private fun openPrevClose(context: Context, q: Quote): String = context.getString(
         R.string.widget_open_prev_close,

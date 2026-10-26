@@ -48,7 +48,7 @@ jobs:
           cores: 4
           ram-size: 4096M
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -timezone America/New_York
           script: bash scripts/screenshots.sh
 
       - uses: actions/upload-artifact@v5
@@ -57,11 +57,15 @@ jobs:
           path: screenshots/
           if-no-files-found: error
 
+      # The files are named for their place in the store listing and the README: 1.png, 2.png…
       - name: Push to the screenshots branch
         run: |
+          dir=fastlane/metadata/android/en-US/images/phoneScreenshots
+          mkdir -p "$dir"
+          for f in screenshots/*.png; do cp "$f" "$dir/$(basename "$f" | cut -d- -f1).png"; done
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B screenshots
-          git add -f screenshots/*.png
+          git add "$dir"
           git commit -m "Screenshots from ${GITHUB_SHA::7}"
           git push -f origin screenshots

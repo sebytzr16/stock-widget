@@ -83,11 +83,11 @@ shot 1-home 20
 open_symbol AAPL
 shot 2-detail 10
 adb shell input swipe 540 1900 540 600 600
-shot 3-detail-more 3
+shot 7-detail-more 3
 adb shell am start -W -a io.github.sebytzr16.stockwidget.SEARCH -n "$PKG/$MAIN" > /dev/null
 sleep 2
 adb shell input text "micro"
-shot 7-search 6
+shot 9-search 6
 restart_app
 sleep 4
 dismiss_anr
@@ -97,19 +97,19 @@ shot 8-settings 3
 # Widgets, hosted by the debug-only board.
 adb shell appwidget grantbind --package "$PKG" --user 0
 adb shell am start -W -n "$PKG/$BOARD" --es board 1 > /dev/null
-shot 4-widgets 15
+shot 3-widgets 15
 adb shell am start -W -n "$PKG/$BOARD" --es board 2 > /dev/null
-shot 5-widgets-more 15
+shot 6-widgets-more 15
 
 # Dark theme.
 adb shell cmd uimode night yes
 restart_app
-shot 6-home-dark 12
+shot 4-home-dark 12
 open_symbol NVDA
 sleep 6
 dismiss_anr
 tap_on text "1Y" || true
-shot 9-detail-dark 8
+shot 5-detail-dark 8
 
 adb shell am broadcast -a com.android.systemui.demo -e command exit > /dev/null
 ls -la "$OUT"

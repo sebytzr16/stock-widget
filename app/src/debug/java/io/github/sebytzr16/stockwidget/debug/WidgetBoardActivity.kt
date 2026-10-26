@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.WindowCompat
 import io.github.sebytzr16.stockwidget.repository
 import io.github.sebytzr16.stockwidget.widget.WidgetKind
 import io.github.sebytzr16.stockwidget.widget.WidgetUpdater
@@ -32,6 +33,12 @@ class WidgetBoardActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Edge to edge, like a launcher: the wallpaper runs under the system bars.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        @Suppress("DEPRECATION")
+        window.statusBarColor = Color.TRANSPARENT
+        @Suppress("DEPRECATION")
+        window.navigationBarColor = Color.TRANSPARENT
         val density = resources.displayMetrics.density
         fun dp(value: Int) = (value * density).toInt()
 
@@ -41,7 +48,7 @@ class WidgetBoardActivity : Activity() {
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(dp(16), dp(64), dp(16), dp(16))
+            setPadding(dp(16), dp(88), dp(16), dp(16))
             background = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
                 intArrayOf(0xFF9DB9CF.toInt(), 0xFF4D7A99.toInt(), 0xFF27445C.toInt()),
