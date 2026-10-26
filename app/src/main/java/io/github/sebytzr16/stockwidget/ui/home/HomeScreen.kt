@@ -274,7 +274,7 @@ private fun PortfolioCard(p: PortfolioUi) {
                     Text(stringResource(R.string.portfolio_partial), style = MaterialTheme.typography.labelSmall, color = LocalPalette.current.text3)
                 }
             }
-            Sparkline(p.series, null, p.dayUp, Modifier.padding(bottom = 4.dp).size(96.dp, 52.dp))
+            Sparkline(p.series, p.dayUp, Modifier.padding(bottom = 4.dp).size(96.dp, 52.dp))
         }
     }
 }
@@ -343,7 +343,7 @@ fun StockCard(row: StockRow, selected: Boolean, onClick: () -> Unit, modifier: M
                     Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
                 }
             }
-            Sparkline(row.spark, row.baseline, row.up, Modifier.size(56.dp, 32.dp), row.positions)
+            Sparkline(row.spark, row.up, Modifier.size(80.dp, 44.dp))
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.widthIn(min = 96.dp)) {
                 Text(row.price, style = MaterialTheme.typography.titleMedium, maxLines = 1)
                 if (row.hasPrice) {

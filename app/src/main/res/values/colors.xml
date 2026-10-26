@@ -3,6 +3,7 @@
     <color name="widget_bg">#FFFFFFFF</color>
     <!-- Pure black only applies in dark mode; in light mode it is the regular background. -->
     <color name="widget_bg_black">#FFFFFFFF</color>
+    <color name="widget_outline_black">#14000000</color>
     <color name="widget_bg_dynamic">#FFFFFFFF</color>
     <color name="widget_text">#FF141615</color>
     <color name="widget_text2">#FF575C5A</color>

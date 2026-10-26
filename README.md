@@ -3,8 +3,8 @@
 A light, fast Android app and set of home-screen widgets for keeping an eye on stocks, ETFs, indices and crypto. No account, no ads, no tracking.
 
 - **Your list at a glance.** Prices, today's change in percent and amount, and a sparkline for every stock, on cards tinted green or red.
-- **Six widgets.** A scrollable list, one stock, two stocks, a 4×1 ticker strip, your portfolio, and a big chart. They follow the system's light or dark theme and show the open and previous close.
-- **Detail that answers questions.** Charts from 1 day to all time with drag-to-inspect, key stats with day and 52-week ranges, pre- and after-hours prices, news headlines and your own notes.
+- **Six widgets.** A scrollable list, one stock, two stocks, a 4×1 ticker strip, your portfolio, and a big chart. Each can follow the system theme or use its own light, dark or pure black theme, and shows the open and previous close.
+- **Detail that answers questions.** Charts from 1 day to all time with drag-to-inspect, key stats with day and 52-week ranges, distance from the 52-week high and low, value traded and trading hours, pre- and after-hours prices, news headlines and your own notes.
 - **Your portfolio, optionally.** Add shares and an average cost to see the value, today's change and your total return, converted into one home currency.
 - **Simple price alerts.** Get notified when a stock goes above or below a price, or moves more than a set percentage in a day.
 - **Gentle on battery.** Background refreshes run only while the markets you follow are open (crypto keeps going), and every refresh is shared by the app and all widgets.
@@ -36,7 +36,7 @@ Listings on F-Droid and IzzyOnDroid are planned.
 | Portfolio | 3×2 | Total value, today's change, total return, chart |
 | Chart | 4×2 | A large intraday chart for one stock |
 
-Long-press a placed widget and choose **Reconfigure** (Android 12+) to change its stocks, or tap an empty widget to pick them.
+When you add a widget you pick its stocks and its theme: System, Light, Dark or Black (pure black with a faint outline, so it shows on a black wallpaper). Long-press a placed widget and choose **Reconfigure** (Android 12+) to change them, or tap an empty widget to pick its stocks.
 
 <p align="center">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="32%" alt="Stock list, ticker strip and chart widgets">

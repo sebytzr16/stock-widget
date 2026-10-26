@@ -20,6 +20,7 @@ import io.github.sebytzr16.stockwidget.core.Series
 import io.github.sebytzr16.stockwidget.core.Settings
 import io.github.sebytzr16.stockwidget.core.UserData
 import io.github.sebytzr16.stockwidget.core.WatchItem
+import io.github.sebytzr16.stockwidget.core.WidgetTheme
 import io.github.sebytzr16.stockwidget.core.YahooClient
 import io.github.sebytzr16.stockwidget.core.YahooParser
 import io.github.sebytzr16.stockwidget.system.Notifier
@@ -169,18 +170,30 @@ class Repository(context: Context) {
         cur.copy(notes = if (note.isBlank()) cur.notes - symbol else cur.notes + (symbol to note.trim()))
     }
 
-    fun setWidget(widgetId: Int, symbols: List<String>) {
-        update(EFFECT_WIDGETS) { it.copy(widgets = it.widgets + (widgetId to symbols)) }
+    /** Saves a widget's picks and, when given, its theme. */
+    fun setWidget(widgetId: Int, symbols: List<String>, theme: WidgetTheme? = null) {
+        update(EFFECT_WIDGETS) {
+            it.copy(
+                widgets = if (symbols.isEmpty()) it.widgets - widgetId else it.widgets + (widgetId to symbols),
+                widgetThemes = if (theme == null) it.widgetThemes else it.widgetThemes + (widgetId to theme),
+            )
+        }
         val missing = symbols.filter { it !in _market.value.quotes }.toSet()
         if (missing.isNotEmpty()) scope.launch { refresh(force = true, only = missing) }
     }
 
-    fun removeWidgets(ids: Collection<Int>) = update(EFFECT_NONE) { it.copy(widgets = it.widgets - ids.toSet()) }
+    fun removeWidgets(ids: Collection<Int>) = update(EFFECT_NONE) {
+        it.copy(widgets = it.widgets - ids.toSet(), widgetThemes = it.widgetThemes - ids.toSet())
+    }
 
     /** After a restore from backup, placed widgets come back under new ids. */
     fun remapWidgets(oldIds: IntArray, newIds: IntArray) = update(EFFECT_WIDGETS) { cur ->
         val moved = oldIds.indices.mapNotNull { i -> cur.widgets[oldIds[i]]?.let { symbols -> newIds.getOrNull(i)?.to(symbols) } }
-        cur.copy(widgets = cur.widgets - oldIds.toSet() + moved)
+        val themes = oldIds.indices.mapNotNull { i -> cur.widgetThemes[oldIds[i]]?.let { t -> newIds.getOrNull(i)?.to(t) } }
+        cur.copy(
+            widgets = cur.widgets - oldIds.toSet() + moved,
+            widgetThemes = cur.widgetThemes - oldIds.toSet() + themes,
+        )
     }
 
     fun updateSettings(transform: (Settings) -> Settings) {

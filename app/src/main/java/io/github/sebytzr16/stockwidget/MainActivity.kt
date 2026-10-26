@@ -3,6 +3,7 @@ package io.github.sebytzr16.stockwidget
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        preferHighestRefreshRate()
         // After a configuration change the restored back stack wins over the launch intent.
         val initial = if (savedInstanceState == null) routeFor(intent) else null
         setContent {
@@ -49,6 +51,20 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         vm.onForeground()
+    }
+
+    /**
+     * Asks for the screen's fastest mode at the current resolution (120 Hz on most phones that
+     * have it), so scrolling and the chart run smoothly instead of at the default 60 Hz.
+     */
+    private fun preferHighestRefreshRate() {
+        @Suppress("DEPRECATION")
+        val display = (if (Build.VERSION.SDK_INT >= 30) display else windowManager.defaultDisplay) ?: return
+        val current = display.mode
+        val best = display.supportedModes
+            .filter { it.physicalWidth == current.physicalWidth && it.physicalHeight == current.physicalHeight }
+            .maxByOrNull { it.refreshRate } ?: return
+        window.attributes = window.attributes.apply { preferredDisplayModeId = best.modeId }
     }
 
     private fun routeFor(intent: Intent?): String? = when (intent?.action) {

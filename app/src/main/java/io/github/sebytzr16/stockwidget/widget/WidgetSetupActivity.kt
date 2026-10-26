@@ -44,7 +44,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,15 +58,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sebytzr16.stockwidget.R
+import io.github.sebytzr16.stockwidget.core.WidgetTheme
 import io.github.sebytzr16.stockwidget.core.displaySymbol
 import io.github.sebytzr16.stockwidget.repository
 import io.github.sebytzr16.stockwidget.ui.AppViewModel
 import io.github.sebytzr16.stockwidget.ui.components.AppIcon
+import io.github.sebytzr16.stockwidget.ui.components.Segmented
 import io.github.sebytzr16.stockwidget.ui.theme.StockTheme
 
 /**
- * Picks the stocks a widget shows: from the user's list, or any symbol found by search.
- * Opened by the launcher when a widget is placed or reconfigured, or by tapping an empty widget.
+ * Picks the stocks a widget shows (from the user's list, or any symbol found by search) and
+ * the widget's theme; widgets without picks only choose a theme. Opened by the launcher when
+ * a widget is placed or reconfigured, or by tapping an empty widget.
  */
 class WidgetSetupActivity : ComponentActivity() {
 
@@ -77,11 +83,12 @@ class WidgetSetupActivity : ComponentActivity() {
         // Backing out cancels placing the widget.
         setResult(RESULT_CANCELED, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId))
         val kind = WidgetKind.of(AppWidgetManager.getInstance(this).getAppWidgetInfo(widgetId))
-        if (kind == null || kind.picks == 0) {
+        if (kind == null) {
             finish()
             return
         }
         val initial = repository.user.value.widgets[widgetId].orEmpty()
+        val initialTheme = repository.user.value.widgetThemes[widgetId] ?: WidgetTheme.SYSTEM
         setContent {
             val user by vm.user.collectAsStateWithLifecycle()
             StockTheme(user.settings) {
@@ -89,8 +96,9 @@ class WidgetSetupActivity : ComponentActivity() {
                     vm = vm,
                     picks = kind.picks,
                     initial = initial,
-                    onDone = { symbols ->
-                        repository.setWidget(widgetId, symbols)
+                    initialTheme = initialTheme,
+                    onDone = { symbols, theme ->
+                        repository.setWidget(widgetId, symbols, theme)
                         setResult(RESULT_OK, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId))
                         finish()
                     },
@@ -113,12 +121,20 @@ private data class Choice(val symbol: String, val name: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SetupScreen(vm: AppViewModel, picks: Int, initial: List<String>, onDone: (List<String>) -> Unit, onClose: () -> Unit) {
+private fun SetupScreen(
+    vm: AppViewModel,
+    picks: Int,
+    initial: List<String>,
+    initialTheme: WidgetTheme,
+    onDone: (List<String>, WidgetTheme) -> Unit,
+    onClose: () -> Unit,
+) {
     val user by vm.user.collectAsStateWithLifecycle()
     val query by vm.query.collectAsStateWithLifecycle()
     val search by vm.search.collectAsStateWithLifecycle()
     val picked = remember { mutableStateListOf<String>().apply { addAll(initial.take(picks)) } }
     val names = remember { mutableStateMapOf<String, String>() }
+    var theme by rememberSaveable { mutableStateOf(initialTheme) }
     DisposableEffect(Unit) { onDispose { vm.query.value = "" } }
 
     fun nameOf(symbol: String) = names[symbol] ?: user.items.firstOrNull { it.symbol == symbol }?.name.orEmpty()
@@ -135,7 +151,9 @@ private fun SetupScreen(vm: AppViewModel, picks: Int, initial: List<String>, onD
         }
     }
 
-    val choices: List<Choice> = if (query.isBlank()) {
+    val choices: List<Choice> = if (picks == 0) {
+        emptyList()
+    } else if (query.isBlank()) {
         // Picks from an earlier search stay visible, ahead of the list.
         val inList = user.items.map { Choice(it.symbol, it.name) }
         picked.filter { s -> inList.none { it.symbol == s } }.map { Choice(it, nameOf(it)) } + inList
@@ -150,7 +168,11 @@ private fun SetupScreen(vm: AppViewModel, picks: Int, initial: List<String>, onD
             TopAppBar(
                 title = {
                     Text(
-                        if (picks == 1) stringResource(R.string.setup_title_one) else pluralStringResource(R.plurals.setup_title_many, picks, picks),
+                        when (picks) {
+                            0 -> stringResource(R.string.widget_theme)
+                            1 -> stringResource(R.string.setup_title_one)
+                            else -> pluralStringResource(R.plurals.setup_title_many, picks, picks)
+                        },
                         style = MaterialTheme.typography.titleLarge,
                     )
                 },
@@ -167,19 +189,38 @@ private fun SetupScreen(vm: AppViewModel, picks: Int, initial: List<String>, onD
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        if (picks == 1) picked.firstOrNull()?.let(::displaySymbol).orEmpty()
-                        else stringResource(R.string.setup_count, picked.size, picks),
+                        when (picks) {
+                            0 -> ""
+                            1 -> picked.firstOrNull()?.let(::displaySymbol).orEmpty()
+                            else -> stringResource(R.string.setup_count, picked.size, picks)
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f),
                     )
-                    Button(onClick = { onDone(picked.toList()) }, enabled = picked.isNotEmpty()) { Text(stringResource(R.string.setup_done)) }
+                    Button(onClick = { onDone(picked.toList(), theme) }, enabled = picks == 0 || picked.isNotEmpty()) { Text(stringResource(R.string.setup_done)) }
                 }
             }
         },
     ) { padding ->
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 8.dp)) {
-            item(key = "search") {
+            item(key = "theme") {
+                Column(Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
+                    Text(stringResource(R.string.widget_theme), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Segmented(
+                        options = listOf(
+                            WidgetTheme.SYSTEM to stringResource(R.string.theme_system),
+                            WidgetTheme.LIGHT to stringResource(R.string.theme_light),
+                            WidgetTheme.DARK to stringResource(R.string.theme_dark),
+                            WidgetTheme.BLACK to stringResource(R.string.theme_black),
+                        ),
+                        selected = theme,
+                        onSelect = { theme = it },
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    )
+                }
+            }
+            if (picks > 0) item(key = "search") {
                 TextField(
                     value = query,
                     onValueChange = { vm.query.value = it },
@@ -202,7 +243,8 @@ private fun SetupScreen(vm: AppViewModel, picks: Int, initial: List<String>, onD
                 )
             }
             if (search.loading && query.isNotBlank()) item(key = "progress") { LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) }
-            if (query.isBlank()) {
+            // Widgets without picks (list, portfolio) only show the theme choice.
+            if (picks > 0 && query.isBlank()) {
                 item(key = "label") {
                     Text(
                         stringResource(if (user.items.isEmpty()) R.string.setup_empty else R.string.setup_your_list),

@@ -11,4 +11,6 @@
     android:targetCellWidth="4"
     android:targetCellHeight="3"
     android:updatePeriodMillis="0"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen"
+    android:configure="io.github.sebytzr16.stockwidget.widget.WidgetSetupActivity"
+    android:widgetFeatures="reconfigurable" />

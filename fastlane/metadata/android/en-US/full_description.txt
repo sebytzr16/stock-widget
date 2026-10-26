@@ -3,21 +3,23 @@
 <p><b>Your list at a glance</b></p>
 <ul>
 <li>Prices, today's change in percent and amount, and a sparkline for every stock</li>
-<li>Indices strip, market status and a portfolio summary</li>
+<li>Indices strip with as many indices as you like, market status and a portfolio summary</li>
 <li>Sort by name, change, price or position value; pin favorites to the top</li>
 </ul>
 
 <p><b>Six widgets</b></p>
 <ul>
 <li>Stock list, one stock, two stocks, a 4×1 ticker strip, portfolio, and a big chart</li>
-<li>Follow the system's light or dark theme, with open and previous close</li>
+<li>Give each widget its own theme: System, Light, Dark or pure Black</li>
+<li>Open and previous close at a glance, with a large intraday chart</li>
 <li>Pick any stock for a widget, and reconfigure it any time</li>
 </ul>
 
 <p><b>Details that answer questions</b></p>
 <ul>
 <li>Charts from 1 day to all time, with drag-to-inspect</li>
-<li>Key stats, day and 52-week ranges, pre- and after-hours prices</li>
+<li>Key stats tiles: day change and range, 52-week high and low and how far the price is from them, volume, value traded, trading hours and more</li>
+<li>Pre- and after-hours prices</li>
 <li>News headlines and your own notes</li>
 <li>Share a stock as an image card or text</li>
 </ul>
@@ -34,6 +36,7 @@
 <li>Background refresh only while the markets you follow are open</li>
 <li>A small app with few dependencies</li>
 <li>Material 3 with Light, Dark and System themes, pure black for OLED, and wallpaper colors</li>
+<li>Smooth at your screen's highest refresh rate, such as 120 Hz</li>
 <li>Two-pane layout on tablets and foldables, app-icon shortcuts</li>
 </ul>
 

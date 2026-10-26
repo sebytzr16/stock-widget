@@ -17,17 +17,21 @@ import io.github.sebytzr16.stockwidget.core.Indices
 import io.github.sebytzr16.stockwidget.core.MarketData
 import io.github.sebytzr16.stockwidget.core.Portfolio
 import io.github.sebytzr16.stockwidget.core.Quote
-import io.github.sebytzr16.stockwidget.core.Series
 import io.github.sebytzr16.stockwidget.core.Settings
 import io.github.sebytzr16.stockwidget.core.UserData
+import io.github.sebytzr16.stockwidget.core.WidgetTheme
 import io.github.sebytzr16.stockwidget.core.displaySymbol
 import io.github.sebytzr16.stockwidget.repository
 import io.github.sebytzr16.stockwidget.ui.Ui
 
+/** Text and trend colors for a widget whose theme is forced light or dark. */
+class WidgetColors(val text: Int, val text2: Int, val divider: Int, val up: Int, val down: Int)
+
 /**
- * Builds each widget's RemoteViews from the cached data. Layout colors come from resources
- * with night variants, so widgets follow the system theme; trend colors use a light and a
- * dark value on Android 12+ and a mid tone readable on both before that.
+ * Builds each widget's RemoteViews from the cached data. By default layout colors come from
+ * resources with night variants, so widgets follow the system theme; trend colors use a light
+ * and a dark value on Android 12+ and a mid tone readable on both before that. A widget given
+ * its own theme gets explicit [WidgetColors] instead.
  */
 object WidgetRenderer {
 
@@ -36,6 +40,14 @@ object WidgetRenderer {
     private const val DARK_UP = 0xFF45C97A.toInt()
     private const val DARK_DOWN = 0xFFF2706F.toInt()
 
+    private val LIGHT = WidgetColors(0xFF141615.toInt(), 0xFF575C5A.toInt(), 0x14000000, LIGHT_UP, LIGHT_DOWN)
+    private val DARK = WidgetColors(0xFFECEEED.toInt(), 0xFFA6ACA9.toInt(), 0x1FFFFFFF, DARK_UP, DARK_DOWN)
+
+    private val PRIMARY_TEXT = intArrayOf(R.id.symbol, R.id.name, R.id.price, R.id.value, R.id.list_title)
+    private val SECONDARY_TEXT = intArrayOf(
+        R.id.info, R.id.updated, R.id.label, R.id.list_updated, R.id.empty, R.id.today_label, R.id.total_label,
+    )
+
     /** Largest chart bitmap side in pixels, well inside the RemoteViews memory budget. */
     private const val MAX_BITMAP_SIDE = 1200
 
@@ -43,14 +55,17 @@ object WidgetRenderer {
         val repo = context.repository
         val u = repo.user.value
         val m = repo.market.value
+        val theme = u.widgetThemes[id] ?: WidgetTheme.SYSTEM
+        val c = colorsFor(theme)
         val views = when (kind) {
             WidgetKind.LIST -> list(context, id, u, m)
-            WidgetKind.SINGLE, WidgetKind.TWO -> blocks(context, kind, id, u, m)
-            WidgetKind.STRIP -> strip(context, kind, id, u, m)
-            WidgetKind.PORTFOLIO -> portfolio(context, manager, id, u, m)
-            WidgetKind.CHART -> chart(context, manager, kind, id, u, m)
+            WidgetKind.SINGLE, WidgetKind.TWO -> blocks(context, manager, kind, id, u, m, c)
+            WidgetKind.STRIP -> strip(context, kind, id, u, m, c)
+            WidgetKind.PORTFOLIO -> portfolio(context, manager, id, u, m, c)
+            WidgetKind.CHART -> chart(context, manager, kind, id, u, m, c)
         }
-        views.setInt(android.R.id.background, "setBackgroundResource", background(u.settings))
+        paint(views, c)
+        views.setInt(android.R.id.background, "setBackgroundResource", background(u.settings, theme))
         manager.updateAppWidget(id, views)
         if (kind == WidgetKind.LIST) {
             @Suppress("DEPRECATION")
@@ -83,35 +98,40 @@ object WidgetRenderer {
     }
 
     /** Single and two-stock widgets: one block per stock, stacked. */
-    private fun blocks(context: Context, kind: WidgetKind, id: Int, u: UserData, m: MarketData): RemoteViews {
+    private fun blocks(context: Context, manager: AppWidgetManager, kind: WidgetKind, id: Int, u: UserData, m: MarketData, c: WidgetColors?): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_blocks)
         val symbols = u.widgets[id].orEmpty().take(kind.picks)
         views.removeAllViews(R.id.content)
         if (symbols.isEmpty()) return unconfigured(context, views, kind, id)
+        // The chart gets 0.9 of every 1.9 of the width left beside the text, at the block's height.
+        val (w, h) = sizeDp(manager, id, 250, 60 * symbols.size)
+        val chartW = ((w - 38) * 0.9f / 1.9f).toInt()
+        val chartH = (h - 28 - 13 * (symbols.size - 1)) / symbols.size - 8
         symbols.forEachIndexed { i, symbol ->
-            if (i > 0) views.addView(R.id.content, RemoteViews(context.packageName, R.layout.widget_divider))
+            if (i > 0) views.addView(R.id.content, RemoteViews(context.packageName, R.layout.widget_divider).also { paint(it, c) })
             val block = RemoteViews(context.packageName, R.layout.widget_block)
-            fillBlock(context, block, symbol, m.quotes[symbol], u.items.firstOrNull { it.symbol == symbol }?.name)
+            fillBlock(context, block, symbol, m.quotes[symbol], u.items.firstOrNull { it.symbol == symbol }?.name, c, chartW, chartH)
             block.setOnClickPendingIntent(R.id.block, openSymbol(context, symbol))
             views.addView(R.id.content, block)
         }
         return views
     }
 
-    private fun strip(context: Context, kind: WidgetKind, id: Int, u: UserData, m: MarketData): RemoteViews {
+    private fun strip(context: Context, kind: WidgetKind, id: Int, u: UserData, m: MarketData, c: WidgetColors?): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_strip)
         val symbols = u.widgets[id].orEmpty().take(kind.picks)
         views.removeAllViews(R.id.content)
         if (symbols.isEmpty()) return unconfigured(context, views, kind, id)
         symbols.forEachIndexed { i, symbol ->
-            if (i > 0) views.addView(R.id.content, RemoteViews(context.packageName, R.layout.widget_divider_vertical))
+            if (i > 0) views.addView(R.id.content, RemoteViews(context.packageName, R.layout.widget_divider_vertical).also { paint(it, c) })
             val cell = RemoteViews(context.packageName, R.layout.widget_strip_cell)
+            paint(cell, c)
             val q = m.quotes[symbol]?.takeIf { it.hasPrice }
             cell.setTextViewText(R.id.symbol, label(symbol))
             if (q != null) {
                 cell.setTextViewText(R.id.price, Fmt.price(q.price, q.currency, q.priceHint))
                 cell.setTextViewText(R.id.change, Fmt.percent(q.changePercent))
-                trend(cell, R.id.change, q.isUp)
+                trend(cell, R.id.change, q.isUp, c)
                 cell.setContentDescription(R.id.cell, describe(q))
             } else {
                 cell.setTextViewText(R.id.price, DASH)
@@ -123,7 +143,7 @@ object WidgetRenderer {
         return views
     }
 
-    private fun portfolio(context: Context, manager: AppWidgetManager, id: Int, u: UserData, m: MarketData): RemoteViews {
+    private fun portfolio(context: Context, manager: AppWidgetManager, id: Int, u: UserData, m: MarketData, c: WidgetColors?): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_portfolio)
         views.setOnClickPendingIntent(android.R.id.background, openApp(context))
         val s = Portfolio.summarize(u.holdings, m.quotes, m.fx, u.settings.homeCurrency)
@@ -139,9 +159,9 @@ object WidgetRenderer {
         views.setTextViewText(R.id.label, if (s.complete) label else label + " · " + context.getString(R.string.widget_partial))
         views.setTextViewText(R.id.value, Fmt.money(s.value, s.currency))
         views.setTextViewText(R.id.day, Fmt.money(s.dayChange, s.currency, signed = true) + " (" + Fmt.percent(s.dayChangePercent) + ")")
-        trend(views, R.id.day, s.dayChange >= 0.0)
+        trend(views, R.id.day, s.dayChange >= 0.0, c)
         views.setTextViewText(R.id.total, Fmt.money(s.gain, s.currency, signed = true) + " (" + Fmt.percent(s.gainPercent) + ")")
-        trend(views, R.id.total, s.gain >= 0.0)
+        trend(views, R.id.total, s.gain >= 0.0, c)
         val (w, h) = sizeDp(manager, id, 250, 110)
         if (s.series.size >= 2) {
             views.setImageViewBitmap(R.id.chart, chartBitmap(context, s.series, s.value - s.dayChange, s.dayChange >= 0.0, w - 32, (h - 108).coerceAtLeast(32), 2f))
@@ -152,7 +172,7 @@ object WidgetRenderer {
         return views
     }
 
-    private fun chart(context: Context, manager: AppWidgetManager, kind: WidgetKind, id: Int, u: UserData, m: MarketData): RemoteViews {
+    private fun chart(context: Context, manager: AppWidgetManager, kind: WidgetKind, id: Int, u: UserData, m: MarketData, c: WidgetColors?): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_chart)
         val symbol = u.widgets[id]?.firstOrNull() ?: return unconfigured(context, views, kind, id)
         views.setViewVisibility(R.id.content, View.VISIBLE)
@@ -170,13 +190,11 @@ object WidgetRenderer {
         }
         views.setTextViewText(R.id.price, Fmt.price(q.price, q.currency, q.priceHint))
         views.setTextViewText(R.id.change, Ui.changeText(q))
-        trend(views, R.id.change, q.isUp)
+        trend(views, R.id.change, q.isUp, c)
         views.setTextViewText(R.id.info, openPrevClose(context, q))
         views.setTextViewText(R.id.updated, updated(context, m))
         val (w, h) = sizeDp(manager, id, 250, 110)
-        val prices = q.intraday.map { it.price }
-        val positions = Series.sessionPositions(q.intraday, q.regular)
-        views.setImageViewBitmap(R.id.chart, chartBitmap(context, prices, q.previousClose.takeIf { it > 0.0 }, q.isUp, w - 32, (h - 96).coerceAtLeast(32), 2.25f, positions))
+        views.setImageViewBitmap(R.id.chart, chartBitmap(context, q.intraday.map { it.price }, null, q.isUp, w - 32, (h - 96).coerceAtLeast(32), 2.25f))
         views.setViewVisibility(R.id.chart, View.VISIBLE)
         views.setContentDescription(android.R.id.background, describe(q))
         return views
@@ -184,8 +202,21 @@ object WidgetRenderer {
 
     // ---- Shared pieces ----------------------------------------------------------------
 
-    /** Symbol and change, price, "Open · Prev close" and a small intraday chart. */
-    fun fillBlock(context: Context, views: RemoteViews, symbol: String, quote: Quote?, fallbackName: String?) {
+    /**
+     * Symbol and change, price, "O · P" (open and previous close) and an intraday chart that
+     * fills the rest of the block; [chartWidthDp] and [chartHeightDp] size its bitmap.
+     */
+    fun fillBlock(
+        context: Context,
+        views: RemoteViews,
+        symbol: String,
+        quote: Quote?,
+        fallbackName: String?,
+        c: WidgetColors?,
+        chartWidthDp: Int,
+        chartHeightDp: Int,
+    ) {
+        paint(views, c)
         val q = quote?.takeIf { it.hasPrice }
         views.setTextViewText(R.id.symbol, label(symbol))
         if (q == null) {
@@ -196,12 +227,12 @@ object WidgetRenderer {
             return
         }
         views.setTextViewText(R.id.change, Fmt.percent(q.changePercent))
-        trend(views, R.id.change, q.isUp)
+        trend(views, R.id.change, q.isUp, c)
         views.setTextViewText(R.id.price, Fmt.price(q.price, q.currency, q.priceHint))
         views.setTextViewText(R.id.info, openPrevClose(context, q))
-        val prices = q.intraday.map { it.price }
-        val positions = Series.sessionPositions(q.intraday, q.regular)
-        views.setImageViewBitmap(R.id.chart, chartBitmap(context, prices, q.previousClose.takeIf { it > 0.0 }, q.isUp, 96, 44, 1.75f, positions))
+        val w = chartWidthDp.coerceAtLeast(48)
+        val h = chartHeightDp.coerceAtLeast(28)
+        views.setImageViewBitmap(R.id.chart, chartBitmap(context, q.intraday.map { it.price }, null, q.isUp, w, h, 2f))
         views.setViewVisibility(R.id.chart, View.VISIBLE)
         views.setContentDescription(R.id.block, describe(q))
     }
@@ -233,14 +264,34 @@ object WidgetRenderer {
         return DateUtils.formatDateTime(context, m.lastSuccess, flags)
     }
 
-    private fun background(settings: Settings): Int = when {
+    fun colorsFor(theme: WidgetTheme): WidgetColors? = when (theme) {
+        WidgetTheme.SYSTEM -> null
+        WidgetTheme.LIGHT -> LIGHT
+        WidgetTheme.DARK, WidgetTheme.BLACK -> DARK
+    }
+
+    /** Recolors a forced-theme widget's text, dividers and icons; views a layout lacks are skipped. */
+    fun paint(views: RemoteViews, c: WidgetColors?) {
+        if (c == null) return
+        PRIMARY_TEXT.forEach { views.setTextColor(it, c.text) }
+        SECONDARY_TEXT.forEach { views.setTextColor(it, c.text2) }
+        views.setInt(R.id.divider, "setBackgroundColor", c.divider)
+        views.setInt(R.id.list_refresh, "setColorFilter", c.text2)
+    }
+
+    private fun background(settings: Settings, theme: WidgetTheme): Int = when {
+        theme == WidgetTheme.LIGHT -> R.drawable.widget_bg_light
+        theme == WidgetTheme.DARK -> R.drawable.widget_bg_dark
+        theme == WidgetTheme.BLACK -> R.drawable.widget_bg_black_forced
         settings.pureBlack -> R.drawable.widget_bg_black
         settings.dynamicColor && Build.VERSION.SDK_INT >= 31 -> R.drawable.widget_bg_dynamic
         else -> R.drawable.widget_bg
     }
 
-    private fun trend(views: RemoteViews, id: Int, up: Boolean) {
-        if (Build.VERSION.SDK_INT >= 31) {
+    private fun trend(views: RemoteViews, id: Int, up: Boolean, c: WidgetColors?) {
+        if (c != null) {
+            views.setTextColor(id, if (up) c.up else c.down)
+        } else if (Build.VERSION.SDK_INT >= 31) {
             views.setColorInt(id, "setTextColor", if (up) LIGHT_UP else LIGHT_DOWN, if (up) DARK_UP else DARK_DOWN)
         } else {
             views.setTextColor(id, if (up) ChartBitmap.UP else ChartBitmap.DOWN)
@@ -255,7 +306,6 @@ object WidgetRenderer {
         widthDp: Int,
         heightDp: Int,
         strokeDp: Float,
-        positions: List<Float>? = null,
     ): Bitmap {
         val density = context.resources.displayMetrics.density
         return ChartBitmap.render(
@@ -265,7 +315,6 @@ object WidgetRenderer {
             width = (widthDp * density).toInt().coerceIn(2, MAX_BITMAP_SIDE),
             height = (heightDp * density).toInt().coerceIn(2, MAX_BITMAP_SIDE),
             stroke = strokeDp * density,
-            positions = positions,
         )
     }
 

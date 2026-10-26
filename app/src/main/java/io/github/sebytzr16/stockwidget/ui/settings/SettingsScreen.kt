@@ -71,8 +71,6 @@ import io.github.sebytzr16.stockwidget.ui.components.ValueRow
 import io.github.sebytzr16.stockwidget.ui.theme.LocalPalette
 import java.util.Currency
 
-private const val MAX_INDICES = 5
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
@@ -281,7 +279,7 @@ private fun IndicesDialog(current: List<String>, onSave: (List<String>) -> Unit,
         text = {
             Column {
                 Text(
-                    stringResource(R.string.indices_dialog_hint, MAX_INDICES),
+                    stringResource(R.string.indices_dialog_hint),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 8.dp),
@@ -289,23 +287,17 @@ private fun IndicesDialog(current: List<String>, onSave: (List<String>) -> Unit,
                 LazyColumn(Modifier.heightIn(max = 400.dp)) {
                     items(Indices.POPULAR, key = { it.symbol }) { idx ->
                         val on = idx.symbol in picked
-                        val enabled = on || picked.size < MAX_INDICES
                         Row(
                             Modifier.fillMaxWidth().heightIn(min = 52.dp).toggleable(
                                 value = on,
-                                enabled = enabled,
                                 role = Role.Checkbox,
                                 onValueChange = { if (it) picked.add(idx.symbol) else picked.remove(idx.symbol) },
                             ),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Checkbox(checked = on, onCheckedChange = null, enabled = enabled)
+                            Checkbox(checked = on, onCheckedChange = null)
                             Spacer(Modifier.width(12.dp))
-                            Text(
-                                idx.name,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                            Text(idx.name, style = MaterialTheme.typography.bodyLarge)
                         }
                     }
                 }

@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0
+
+- Each widget can have its own theme (System, Light, Dark or Black), chosen when you add it or reconfigure it. Pure black widgets now have a faint outline so they stay visible on a black wallpaper.
+- Widgets show the open and previous close as "O" and "P" so the prices fit, and their charts are larger.
+- Charts in widgets and on the home list fill their whole width and no longer draw the dashed previous-close line.
+- Pick as many indices as you like for the home strip.
+- The app runs at the screen's highest refresh rate (e.g. 120 Hz).
+- Key stats are shown as tiles and add day change, day range, distance from the 52-week high and low, value traded, currency, type, trading hours and last trade time.
+
 ## 1.0.0
 
 The first release of the rebuilt app.
