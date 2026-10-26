@@ -18,6 +18,7 @@ class CodecTest {
             onlyWhenOpen = false, extendedHours = false, alertsEnabled = false, homeCurrency = "EUR",
             sort = SortMode.CHANGE, indices = listOf("^FTSE"),
         ),
+        widgetThemes = mapOf(42 to WidgetTheme.BLACK, 43 to WidgetTheme.LIGHT),
     )
 
     private val market = MarketData(

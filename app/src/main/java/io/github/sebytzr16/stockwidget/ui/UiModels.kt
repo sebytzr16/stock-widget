@@ -13,7 +13,6 @@ import io.github.sebytzr16.stockwidget.core.MarketHours
 import io.github.sebytzr16.stockwidget.core.MarketPhase
 import io.github.sebytzr16.stockwidget.core.Portfolio
 import io.github.sebytzr16.stockwidget.core.Quote
-import io.github.sebytzr16.stockwidget.core.Series
 import io.github.sebytzr16.stockwidget.core.SortMode
 import io.github.sebytzr16.stockwidget.core.UserData
 import io.github.sebytzr16.stockwidget.core.WatchItem
@@ -34,9 +33,6 @@ data class StockRow(
     val extUp: Boolean,
     val holding: String?,
     val spark: List<Double>,
-    /** Where each sparkline point sits in its trading session (0..1), when known. */
-    val positions: List<Float>?,
-    val baseline: Double?,
 )
 
 /** A row in edit mode: no prices, so a refresh never disturbs a drag in progress. */
@@ -79,6 +75,9 @@ data class PositionUi(
     val totalUp: Boolean,
 )
 
+/** One key-stat tile; [up] colors the value as a gain or loss when set. */
+data class StatUi(val label: String, val value: String, val up: Boolean? = null)
+
 data class AlertUi(val id: Long, val title: String, val subtitle: String, val enabled: Boolean)
 
 data class DetailUi(
@@ -92,14 +91,7 @@ data class DetailUi(
     val extUp: Boolean,
     val status: String?,
     val statusPhase: MarketPhase?,
-    val open: String,
-    val previousClose: String,
-    val volume: String,
-    val exchange: String,
-    val dayHigh: String,
-    val dayLow: String,
-    val yearHigh: String,
-    val yearLow: String,
+    val stats: List<StatUi>,
     val canHold: Boolean,
     val holding: Holding?,
     val position: PositionUi?,
@@ -211,14 +203,7 @@ object Ui {
             extUp = ext?.second ?: true,
             status = if (q != null && status != null) statusText(context, q, status.phase, status.until, now, withExchange = false) else null,
             statusPhase = status?.phase,
-            open = q?.open?.takeIf { it > 0.0 }?.let { Fmt.price(it, q.currency, q.priceHint) } ?: DASH,
-            previousClose = q?.previousClose?.takeIf { it > 0.0 }?.let { Fmt.price(it, q.currency, q.priceHint) } ?: DASH,
-            volume = q?.volume?.takeIf { it > 0L }?.let { Fmt.compact(it) } ?: DASH,
-            exchange = q?.exchange?.takeIf { it.isNotBlank() } ?: DASH,
-            dayHigh = priceOrDash(q, q?.dayHigh),
-            dayLow = priceOrDash(q, q?.dayLow),
-            yearHigh = priceOrDash(q, q?.yearHigh),
-            yearLow = priceOrDash(q, q?.yearLow),
+            stats = stats(context, q),
             canHold = !(q?.isIndex ?: symbol.startsWith("^")) && q?.isCurrency != true,
             holding = holding,
             position = position,
@@ -279,8 +264,6 @@ object Ui {
                 quantity(context, q, holding.shares) + " · " + Fmt.money(p.value, p.currency)
             } else null,
             spark = q?.intraday?.map { it.price }.orEmpty(),
-            positions = q?.let { Series.sessionPositions(it.intraday, it.regular) },
-            baseline = q?.previousClose?.takeIf { it > 0.0 },
         )
     }
 
@@ -339,6 +322,60 @@ object Ui {
     private fun primaryQuote(items: List<WatchItem>, m: MarketData): Quote? {
         val quotes = items.mapNotNull { m.quotes[it.symbol] }.filter { it.regular != null }
         return quotes.firstOrNull { !it.isCrypto && !it.isCurrency } ?: quotes.firstOrNull()
+    }
+
+    /**
+     * Key stats: today's prices, the 52-week extremes and how far the price sits from them,
+     * trading activity, and facts about the listing. Optional facts are left out when unknown.
+     */
+    private fun stats(context: Context, q: Quote?): List<StatUi> {
+        fun stat(label: Int, value: String, up: Boolean? = null) = StatUi(context.getString(label), value, up)
+        val out = mutableListOf(
+            stat(R.string.open, priceOrDash(q, q?.open)),
+            stat(R.string.previous_close, priceOrDash(q, q?.previousClose)),
+            stat(R.string.day_high, priceOrDash(q, q?.dayHigh)),
+            stat(R.string.day_low, priceOrDash(q, q?.dayLow)),
+        )
+        if (q == null) return out
+        if (q.previousClose > 0.0) {
+            val decimals = Fmt.priceDecimals(q.price, q.priceHint)
+            out += stat(R.string.day_change, Fmt.signedPrice(q.change, q.currency, decimals) + " (" + Fmt.percent(q.changePercent) + ")", q.isUp)
+        }
+        if (q.dayLow > 0.0 && q.dayHigh >= q.dayLow) {
+            out += stat(R.string.day_swing, Fmt.percent((q.dayHigh - q.dayLow) / q.dayLow * 100.0, signed = false))
+        }
+        out += stat(R.string.year_high, priceOrDash(q, q.yearHigh))
+        out += stat(R.string.year_low, priceOrDash(q, q.yearLow))
+        if (q.yearHigh > 0.0) out += stat(R.string.from_year_high, Fmt.percent((q.price - q.yearHigh) / q.yearHigh * 100.0), q.price >= q.yearHigh)
+        if (q.yearLow > 0.0) out += stat(R.string.from_year_low, Fmt.percent((q.price - q.yearLow) / q.yearLow * 100.0), q.price >= q.yearLow)
+        if (q.volume > 0L) {
+            out += stat(R.string.volume, Fmt.compact(q.volume))
+            val unit = Currencies.unit(q.currency)
+            // Crypto volume is already quoted in money, so only listings get a value traded.
+            if (unit.major.isNotBlank() && !q.isCrypto) {
+                val traded = Fmt.compact((q.price * q.volume * unit.factor).toLong())
+                out += stat(R.string.value_traded, Currencies.symbol(unit.major)?.let { it + traded } ?: "$traded ${unit.major}")
+            }
+        }
+        out += stat(R.string.exchange, q.exchange.ifBlank { DASH })
+        if (q.currency.isNotBlank()) out += stat(R.string.currency, Currencies.unit(q.currency).major)
+        typeLabel(q.type)?.let { out += stat(R.string.asset_type, context.getString(it)) }
+        q.regular?.takeIf { it.end > it.start && it.end - it.start < 86_400_000L }?.let {
+            out += stat(R.string.trading_hours, DateUtils.formatDateRange(context, it.start, it.end, DateUtils.FORMAT_SHOW_TIME))
+        }
+        if (q.marketTime > 0L) out += stat(R.string.last_trade, time(context, q.marketTime))
+        return out
+    }
+
+    private fun typeLabel(type: String): Int? = when (type) {
+        "EQUITY" -> R.string.type_stock
+        "ETF" -> R.string.type_etf
+        "INDEX" -> R.string.type_index
+        "CRYPTOCURRENCY" -> R.string.type_crypto
+        "CURRENCY" -> R.string.type_currency
+        "FUTURE" -> R.string.type_future
+        "MUTUALFUND" -> R.string.type_fund
+        else -> null
     }
 
     private fun priceOrDash(q: Quote?, value: Double?): String =

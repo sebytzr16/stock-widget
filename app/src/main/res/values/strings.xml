@@ -110,6 +110,22 @@
     <string name="day_low">Day low</string>
     <string name="year_high">52-week high</string>
     <string name="year_low">52-week low</string>
+    <string name="day_change">Day change</string>
+    <string name="day_swing">Day range</string>
+    <string name="from_year_high">From 52-week high</string>
+    <string name="from_year_low">From 52-week low</string>
+    <string name="value_traded">Value traded</string>
+    <string name="currency">Currency</string>
+    <string name="asset_type">Type</string>
+    <string name="trading_hours">Trading hours</string>
+    <string name="last_trade">Last trade</string>
+    <string name="type_stock">Stock</string>
+    <string name="type_etf">ETF</string>
+    <string name="type_index">Index</string>
+    <string name="type_crypto">Crypto</string>
+    <string name="type_currency">Currency</string>
+    <string name="type_future">Future</string>
+    <string name="type_fund">Mutual fund</string>
     <string name="notes">Notes</string>
     <string name="note_hint">Add a note: why you bought it, a target price…</string>
     <string name="add">Add</string>
@@ -187,6 +203,8 @@
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="theme_black">Black</string>
+    <string name="widget_theme">Widget theme</string>
     <string name="pure_black">Pure black</string>
     <string name="pure_black_hint">In dark theme, for OLED screens</string>
     <string name="wallpaper_colors">Wallpaper colors</string>
@@ -196,7 +214,7 @@
     <string name="home_currency_hint">Portfolio totals are converted to it</string>
     <string name="indices">Indices</string>
     <string name="indices_hidden">Hidden</string>
-    <string name="indices_dialog_hint">Shown above your list. Pick up to %1$d.</string>
+    <string name="indices_dialog_hint">Shown above your list. Pick as many as you like.</string>
     <string name="extended_hours">Pre- and after-hours prices</string>
     <string name="extended_hours_hint">Shown in the app, for markets that report them</string>
     <string name="group_refresh">Background refresh</string>
@@ -235,7 +253,7 @@
     <string name="widget_list_title">Stocks</string>
     <string name="widget_list_empty">Open the app to add stocks</string>
     <string name="widget_loading">Loading prices…</string>
-    <string name="widget_open_prev_close">Open %1$s · Prev close %2$s</string>
+    <string name="widget_open_prev_close">O %1$s · P %2$s</string>
     <string name="widget_pick_one">Tap to choose a stock</string>
     <string name="widget_pick_many">Tap to choose stocks</string>
     <string name="widget_portfolio_label">Portfolio · %1$s</string>
@@ -266,7 +284,7 @@
     <string name="widget_sample_price" translatable="false">$227.48</string>
     <string name="widget_sample_change" translatable="false" formatted="false">+1.24%</string>
     <string name="widget_sample_change_full" translatable="false" formatted="false">+$2.79 (+1.24%)</string>
-    <string name="widget_sample_info" translatable="false">Open $225.10 · Prev close $224.69</string>
+    <string name="widget_sample_info" translatable="false">O $225.10 · P $224.69</string>
     <string name="widget_sample_portfolio_label" translatable="false">Portfolio · USD</string>
     <string name="widget_sample_portfolio_value" translatable="false">$12,480.20</string>
     <string name="widget_sample_portfolio_day" translatable="false" formatted="false">+$151.06 (+1.22%)</string>

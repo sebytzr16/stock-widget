@@ -27,6 +27,7 @@ object Codec {
             u.widgets.forEach { (id, symbols) -> put(id.toString(), JSONArray().apply { symbols.forEach { put(it) } }) }
         })
         put("settings", encodeSettings(u.settings))
+        put("wthemes", JSONObject().apply { u.widgetThemes.forEach { (id, t) -> put(id.toString(), t.name) } })
     }.toString()
 
     fun decodeUser(json: String): UserData {
@@ -56,7 +57,10 @@ object Codec {
             val list = (v as? JSONArray)?.let { a -> (0 until a.length()).mapNotNull { a.optString(it).takeIf { s -> s.isNotBlank() } } }
             id.toIntOrNull()?.let { key -> list?.let { key to it } }
         }.toMap()
-        return UserData(items, holdings, alerts, notes, widgets, decodeSettings(o.optJSONObject("settings")))
+        val widgetThemes = o.optJSONObject("wthemes").entries { id, v ->
+            id.toIntOrNull()?.let { key -> (v as? String)?.let { key to enumOr(it, WidgetTheme.SYSTEM) } }
+        }.toMap()
+        return UserData(items, holdings, alerts, notes, widgets, decodeSettings(o.optJSONObject("settings")), widgetThemes)
     }
 
     fun encodeMarket(m: MarketData): String = JSONObject().apply {

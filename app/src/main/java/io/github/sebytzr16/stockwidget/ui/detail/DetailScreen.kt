@@ -78,6 +78,7 @@ import io.github.sebytzr16.stockwidget.ui.AppViewModel
 import io.github.sebytzr16.stockwidget.ui.ChartLoad
 import io.github.sebytzr16.stockwidget.ui.DetailUi
 import io.github.sebytzr16.stockwidget.ui.NewsLoad
+import io.github.sebytzr16.stockwidget.ui.StatUi
 import io.github.sebytzr16.stockwidget.ui.components.AppIcon
 import io.github.sebytzr16.stockwidget.ui.components.CardTitle
 import io.github.sebytzr16.stockwidget.ui.components.LabeledValue
@@ -359,27 +360,36 @@ private fun PositionCard(d: DetailUi, onEdit: () -> Unit) {
     }
 }
 
-/** Today's numbers and the 52-week extremes, one plainly labelled value per row. */
+/** Key stats as small rounded tiles, two per row. */
 @Composable
 private fun StatsCard(d: DetailUi) {
-    val rows = listOf(
-        R.string.open to d.open,
-        R.string.previous_close to d.previousClose,
-        R.string.day_high to d.dayHigh,
-        R.string.day_low to d.dayLow,
-        R.string.year_high to d.yearHigh,
-        R.string.year_low to d.yearLow,
-        R.string.volume to d.volume,
-        R.string.exchange to d.exchange,
-    )
     SectionCard {
         CardTitle(stringResource(R.string.key_stats))
-        rows.forEachIndexed { i, (label, value) ->
-            if (i > 0) RowDivider()
-            Row(Modifier.fillMaxWidth().heightIn(min = 44.dp).padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-                Text(value, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+        Column(Modifier.padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            d.stats.chunked(2).forEach { pair ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    pair.forEach { StatTile(it, Modifier.weight(1f)) }
+                    if (pair.size == 1) Spacer(Modifier.weight(1f))
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun StatTile(stat: StatUi, modifier: Modifier = Modifier) {
+    Surface(modifier, shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
+            Text(stat.label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                stat.value,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = stat.up?.let { trendColor(it) } ?: MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = 2.dp),
+            )
         }
     }
 }

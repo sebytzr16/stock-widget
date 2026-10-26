@@ -28,20 +28,17 @@ import io.github.sebytzr16.stockwidget.ui.theme.LocalPalette
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-/**
- * Small intraday line for list rows, with the previous close as a faint dashed baseline.
- * [positions] place points on the session clock (see Series.sessionPositions).
- */
+/** Small line for list rows, spread across the full width with no baseline. */
 @Composable
-fun Sparkline(prices: List<Double>, baseline: Double?, up: Boolean, modifier: Modifier = Modifier, positions: List<Float>? = null) {
+fun Sparkline(prices: List<Double>, up: Boolean, modifier: Modifier = Modifier) {
     val palette = LocalPalette.current
     val color = if (up) palette.upLine else palette.downLine
     val baseColor = palette.text3
     Canvas(modifier) {
         drawPriceLine(
             prices = prices,
-            positions = positions,
-            baseline = baseline,
+            positions = null,
+            baseline = null,
             color = color,
             baseColor = baseColor,
             stroke = 1.75.dp,

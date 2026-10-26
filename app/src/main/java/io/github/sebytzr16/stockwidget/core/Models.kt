@@ -79,6 +79,9 @@ data class PriceAlert(
 
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
+/** A widget's own look: follow the app (SYSTEM) or force light, dark or pure black. */
+enum class WidgetTheme { SYSTEM, LIGHT, DARK, BLACK }
+
 enum class SortMode { CUSTOM, NAME, CHANGE, PRICE, VALUE }
 
 data class Settings(
@@ -108,6 +111,8 @@ data class UserData(
     /** Widget id to the symbols it shows (single, two-stock, strip and chart widgets). */
     val widgets: Map<Int, List<String>> = emptyMap(),
     val settings: Settings = Settings(),
+    /** Widget id to its theme; widgets not listed follow the app. */
+    val widgetThemes: Map<Int, WidgetTheme> = emptyMap(),
 )
 
 /** The last fetched market data. Rebuilt on every refresh. */

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One stock: symbol and change, price, open and previous close, intraday chart. -->
+<!-- One stock: symbol and change, price, open (O) and previous close (P), intraday chart. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/block"
     android:layout_width="match_parent"
@@ -43,11 +43,15 @@
             android:text="@string/widget_sample_info" />
     </LinearLayout>
 
+    <!-- The chart takes all the room the text leaves, at the block's full height. -->
     <ImageView
         android:id="@+id/chart"
-        android:layout_width="96dp"
-        android:layout_height="44dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.9"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:contentDescription="@null"
         android:scaleType="fitXY"
         android:src="@drawable/widget_chart_sample" />

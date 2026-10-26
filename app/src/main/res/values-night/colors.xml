@@ -2,6 +2,7 @@
 <resources>
     <color name="widget_bg">#FF1C1F1E</color>
     <color name="widget_bg_black">#FF000000</color>
+    <color name="widget_outline_black">#40FFFFFF</color>
     <color name="widget_bg_dynamic">#FF1C1F1E</color>
     <color name="widget_text">#FFECEEED</color>
     <color name="widget_text2">#FFA6ACA9</color>
