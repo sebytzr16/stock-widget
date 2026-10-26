@@ -119,13 +119,6 @@
     <string name="asset_type">Type</string>
     <string name="trading_hours">Trading hours</string>
     <string name="last_trade">Last trade</string>
-    <string name="type_stock">Stock</string>
-    <string name="type_etf">ETF</string>
-    <string name="type_index">Index</string>
-    <string name="type_crypto">Crypto</string>
-    <string name="type_currency">Currency</string>
-    <string name="type_future">Future</string>
-    <string name="type_fund">Mutual fund</string>
     <string name="notes">Notes</string>
     <string name="note_hint">Add a note: why you bought it, a target price…</string>
     <string name="add">Add</string>
