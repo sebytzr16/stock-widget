@@ -1,0 +1,65 @@
+name: Screenshots
+
+# Takes the README and store screenshots on an emulator with sample data, and pushes them
+# to the `screenshots` branch for review. Run it from the Actions tab.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['claude/screenshots']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: screenshots
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Build the debug app
+        run: ./gradlew --no-daemon assembleDebug
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Take screenshots
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot
+          script: bash scripts/screenshots.sh
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: screenshots
+          path: screenshots/
+          if-no-files-found: error
+
+      - name: Push to the screenshots branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B screenshots
+          git add -f screenshots/*.png
+          git commit -m "Screenshots from ${GITHUB_SHA::7}"
+          git push -f origin screenshots

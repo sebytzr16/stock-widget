@@ -16,6 +16,7 @@ import io.github.sebytzr16.stockwidget.core.PriceAlert
 import io.github.sebytzr16.stockwidget.core.Quote
 import io.github.sebytzr16.stockwidget.core.RangeSeries
 import io.github.sebytzr16.stockwidget.core.SearchResult
+import io.github.sebytzr16.stockwidget.core.Series
 import io.github.sebytzr16.stockwidget.core.Settings
 import io.github.sebytzr16.stockwidget.core.UserData
 import io.github.sebytzr16.stockwidget.core.WatchItem
@@ -218,22 +219,20 @@ class Repository(context: Context) {
             val gate = Semaphore(MAX_PARALLEL)
             val fetched = coroutineScope {
                 symbols.map { s ->
-                    async { gate.withPermit { s to runCatching { api.chart(s, "1d", "5m", prePost = true) } } }
+                    async { gate.withPermit { fetchQuote(s, u.items.firstOrNull { it.symbol == s }?.name, before.quotes[s], now) } }
                 }.awaitAll()
             }
             val quotes = before.quotes.toMutableMap()
             val fresh = LinkedHashMap<String, Quote>()
             var failed = 0
             var error: String? = null
-            for ((s, result) in fetched) {
-                val chart = result.getOrNull()
-                val q = chart?.let { YahooParser.toQuote(it, s, u.items.firstOrNull { i -> i.symbol == s }?.name, now, quotes[s]) }
+            for ((s, q, problem) in fetched) {
                 if (q != null) {
                     quotes[s] = q
                     fresh[s] = q
                 } else {
                     failed++
-                    error = result.exceptionOrNull()?.message ?: chart?.error
+                    error = problem
                 }
             }
 
@@ -267,6 +266,23 @@ class Repository(context: Context) {
         } finally {
             _refreshing.value = false
         }
+    }
+
+    /**
+     * One symbol's latest quote, or why it failed. Before the day's open there may be no
+     * session in the one-day chart and none cached (e.g. a fresh install): then the last
+     * session comes from a short multi-day chart, once, and is kept until the open.
+     */
+    private suspend fun fetchQuote(symbol: String, name: String?, previous: Quote?, now: Long): Triple<String, Quote?, String?> {
+        val result = runCatching { api.chart(symbol, "1d", "5m", prePost = true) }
+        val chart = result.getOrNull()
+        var q = chart?.let { YahooParser.toQuote(it, symbol, name, now, previous) }
+        // Mutual funds have no intraday prices at all; don't ask again on every refresh.
+        if (q != null && q.intraday.size < 2 && q.type != "MUTUALFUND") {
+            val last = runCatching { api.chart(symbol, "5d", "5m", prePost = false) }.getOrNull()?.let { YahooParser.lastSession(it) }
+            if (last != null && last.size >= 2) q = q.copy(intraday = Series.downsample(last, INTRADAY_POINTS))
+        }
+        return Triple(symbol, q, result.exceptionOrNull()?.message ?: chart?.error)
     }
 
     /** Whether a background refresh is worth it now (smart schedule). */
@@ -363,5 +379,6 @@ class Repository(context: Context) {
         const val MIN_REFRESH_GAP = 60_000L
         const val MAX_PARALLEL = 6
         const val NEWS_TTL = 15 * 60_000L
+        const val INTRADAY_POINTS = 120
     }
 }

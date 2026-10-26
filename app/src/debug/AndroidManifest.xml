@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Debug builds only: hosts the widgets for screenshots (scripts/screenshots.sh). -->
+        <activity
+            android:name="io.github.sebytzr16.stockwidget.debug.WidgetBoardActivity"
+            android:exported="true" />
+    </application>
+
+</manifest>

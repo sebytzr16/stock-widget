@@ -114,4 +114,50 @@ class YahooParserTest {
         assertEquals(1793000000000L, news[0].time)
         assertTrue(news[0].link.startsWith("https://"))
     }
+
+    @Test
+    fun beforeTheOpenShowsTheLastSession() {
+        // Monday's session hasn't started; the chart holds Friday's bars, regular and after hours.
+        val fri = regStart - 3 * 86_400
+        val times = listOf(fri, fri + 300, fri + 600, regEnd - 3 * 86_400 + 300)
+        val json = """
+        {"chart":{"result":[{"meta":{"currency":"USD","symbol":"AAPL","regularMarketPrice":227.48,
+          "previousClose":224.69,"gmtoffset":-14400,
+          "currentTradingPeriod":{"regular":{"start":$regStart,"end":$regEnd}}},
+          "timestamp":[${times.joinToString(",")}],
+          "indicators":{"quote":[{"open":[225.0,225.5,226.0,227.6],"close":[225.4,225.9,227.48,227.9]}]}}],"error":null}}
+        """.trimIndent()
+        val q = YahooParser.toQuote(YahooParser.parseChart(json), "AAPL", null, now = 1L)!!
+        assertEquals(listOf(225.4, 225.9, 227.48), q.intraday.map { it.price })
+        assertEquals(225.0, q.open, 1e-9)
+    }
+
+    @Test
+    fun keepsTheCachedSessionUntilTheOpen() {
+        // Only today's pre-market bars so far, and none from the last session.
+        val json = """
+        {"chart":{"result":[{"meta":{"symbol":"AAPL","regularMarketPrice":227.48,
+          "currentTradingPeriod":{"regular":{"start":$regStart,"end":$regEnd}}},
+          "timestamp":[${regStart - 600},${regStart - 300}],
+          "indicators":{"quote":[{"close":[228.0,228.2]}]}}],"error":null}}
+        """.trimIndent()
+        val cached = listOf(PricePoint(1L, 225.0), PricePoint(2L, 227.48))
+        val previous = Quote("AAPL", price = 227.48, open = 225.1, intraday = cached)
+        val q = YahooParser.toQuote(YahooParser.parseChart(json), "AAPL", null, 1L, previous)!!
+        assertEquals(cached, q.intraday)
+        assertEquals(225.1, q.open, 1e-9)
+        assertEquals(228.2, q.extPrice!!, 1e-9)
+    }
+
+    @Test
+    fun lastSessionTakesTheLatestDay() {
+        val day = 86_400
+        val times = listOf(regStart - day, regStart - day + 300, regStart, regStart + 300, regStart + 600)
+        val json = """
+        {"chart":{"result":[{"meta":{"symbol":"AAPL","gmtoffset":-14400},
+          "timestamp":[${times.joinToString(",")}],
+          "indicators":{"quote":[{"close":[1.0,2.0,3.0,4.0,5.0]}]}}],"error":null}}
+        """.trimIndent()
+        assertEquals(listOf(3.0, 4.0, 5.0), YahooParser.lastSession(YahooParser.parseChart(json)).map { it.price })
+    }
 }

@@ -211,9 +211,16 @@ private fun Header(d: DetailUi, chart: ChartLoad, range: ChartRange, scrub: Int?
         val pct = if (reference > 0.0) delta / reference * 100.0 else 0.0
         val color = trendColor(delta >= 0.0)
         val secondary = MaterialTheme.colorScheme.onSurfaceVariant
+        val lastTime = series?.points?.lastOrNull()?.time
         val suffix = when {
             point != null -> pointLabel(context, point.time, range, axis = false)
             series == null -> stringResource(R.string.range_today)
+            // Before the open the 1D chart is the last session: name its day.
+            range == ChartRange.D1 && lastTime != null && !DateUtils.isToday(lastTime) -> DateUtils.formatDateTime(
+                context, lastTime,
+                DateUtils.FORMAT_SHOW_WEEKDAY or DateUtils.FORMAT_ABBREV_WEEKDAY or DateUtils.FORMAT_SHOW_DATE or
+                    DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_YEAR,
+            )
             else -> stringResource(rangeCaption(range))
         }
         Text(Fmt.price(price, q.currency, q.priceHint), style = MaterialTheme.typography.displaySmall, modifier = Modifier.padding(top = 6.dp))

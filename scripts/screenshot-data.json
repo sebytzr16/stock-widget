@@ -1,0 +1,29 @@
+{
+  "v": 1,
+  "items": [
+    {"s": "AAPL", "n": "Apple Inc.", "p": true},
+    {"s": "NVDA", "n": "NVIDIA Corporation", "p": true},
+    {"s": "MSFT", "n": "Microsoft Corporation", "p": false},
+    {"s": "GOOGL", "n": "Alphabet Inc.", "p": false},
+    {"s": "AMZN", "n": "Amazon.com, Inc.", "p": false},
+    {"s": "TSLA", "n": "Tesla, Inc.", "p": false},
+    {"s": "BTC-USD", "n": "Bitcoin", "p": false}
+  ],
+  "holdings": {
+    "AAPL": {"q": 25, "c": 172.4},
+    "NVDA": {"q": 40, "c": 96.5},
+    "MSFT": {"q": 12, "c": 338.0},
+    "BTC-USD": {"q": 0.08, "c": 58200}
+  },
+  "alerts": [
+    {"id": 1, "s": "AAPL", "k": "MOVE", "v": 3, "on": true},
+    {"id": 2, "s": "AAPL", "k": "BELOW", "v": 150, "on": true}
+  ],
+  "notes": {"AAPL": "Long-term hold. Revisit after the next earnings report."},
+  "widgets": {},
+  "settings": {
+    "theme": "SYSTEM", "black": false, "dynamic": false, "every": 30, "open": true,
+    "ext": true, "alerts": true, "home": "USD", "sort": "CUSTOM",
+    "indices": ["^GSPC", "^IXIC", "^DJI"]
+  }
+}

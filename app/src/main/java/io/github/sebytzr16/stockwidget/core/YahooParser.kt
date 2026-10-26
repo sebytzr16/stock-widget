@@ -84,7 +84,9 @@ object YahooParser {
         maxPoints: Int = 120,
     ): Quote? {
         val regular = chart.regular
-        val regularBars = if (regular == null) chart.bars else chart.bars.filter { it.time in regular }
+        val todayBars = if (regular == null) chart.bars else chart.bars.filter { it.time in regular }
+        // Before today's open, and on days the market is closed, show the last session instead.
+        val regularBars = todayBars.ifEmpty { regular?.let { earlierSession(chart.bars, it) }.orEmpty() }
         val price = chart.price ?: regularBars.lastOrNull()?.close ?: previous?.price ?: return null
         val first = regularBars.firstOrNull()
         val ext = if (regular == null) null else chart.bars.lastOrNull { it.time !in regular }
@@ -95,7 +97,7 @@ object YahooParser {
             price = price,
             previousClose = chart.previousClose ?: chart.chartPreviousClose
                 ?: previous?.previousClose ?: 0.0,
-            open = first?.open ?: first?.close ?: 0.0,
+            open = first?.open ?: first?.close ?: previous?.open ?: 0.0,
             dayHigh = chart.dayHigh ?: regularBars.maxOfOrNull { it.high ?: it.close } ?: 0.0,
             dayLow = chart.dayLow ?: regularBars.minOfOrNull { it.low ?: it.close } ?: 0.0,
             volume = chart.volume ?: 0L,
@@ -114,8 +116,35 @@ object YahooParser {
             post = chart.post,
             extPrice = ext?.close,
             extTime = ext?.time ?: 0L,
-            intraday = Series.downsample(regularBars.map { PricePoint(it.time, it.close) }, maxPoints),
+            intraday = regularBars.map { PricePoint(it.time, it.close) }
+                .takeIf { it.size >= 2 }?.let { Series.downsample(it, maxPoints) }
+                ?: previous?.intraday?.takeIf { it.size >= 2 }
+                ?: emptyList(),
         )
+    }
+
+    /**
+     * Bars of the most recent earlier session in a one-day chart: the same trading hours as
+     * [regular], on one of the previous seven days. Yahoo returns the last session's bars
+     * while today's hasn't started.
+     */
+    private fun earlierSession(bars: List<Bar>, regular: Session): List<Bar> {
+        val day = 86_400_000L
+        for (k in 1..7) {
+            val window = Session(regular.start - k * day, regular.end - k * day)
+            val found = bars.filter { it.time in window }
+            if (found.isNotEmpty()) return found
+        }
+        return emptyList()
+    }
+
+    /** The latest day's prices from a multi-day chart fetched without pre- and post-market bars. */
+    fun lastSession(chart: Chart): List<PricePoint> {
+        val offset = chart.gmtOffsetSec * 1000L
+        val day = 86_400_000L
+        val last = chart.bars.lastOrNull() ?: return emptyList()
+        val lastDay = Math.floorDiv(last.time + offset, day)
+        return chart.bars.filter { Math.floorDiv(it.time + offset, day) == lastDay }.map { PricePoint(it.time, it.close) }
     }
 
     /** A detail-chart range; the change is measured from the close before the range starts. */
