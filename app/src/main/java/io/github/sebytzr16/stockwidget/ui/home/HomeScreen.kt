@@ -70,7 +70,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sebytzr16.stockwidget.R
-import io.github.sebytzr16.stockwidget.core.MarketPhase
 import io.github.sebytzr16.stockwidget.core.SearchResult
 import io.github.sebytzr16.stockwidget.core.SortMode
 import io.github.sebytzr16.stockwidget.ui.AppViewModel
@@ -82,6 +81,7 @@ import io.github.sebytzr16.stockwidget.ui.StockRow
 import io.github.sebytzr16.stockwidget.ui.components.AppIcon
 import io.github.sebytzr16.stockwidget.ui.components.SectionCard
 import io.github.sebytzr16.stockwidget.ui.components.Sparkline
+import io.github.sebytzr16.stockwidget.ui.components.marketDotColor
 import io.github.sebytzr16.stockwidget.ui.components.trendColor
 import io.github.sebytzr16.stockwidget.ui.theme.LocalPalette
 
@@ -160,12 +160,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeHeader(ui: HomeUi, onRefresh: () -> Unit, onSettings: () -> Unit) {
-    val palette = LocalPalette.current
-    val dot = when (ui.statusPhase) {
-        MarketPhase.OPEN, MarketPhase.ALWAYS -> palette.up
-        MarketPhase.PRE, MarketPhase.POST -> MaterialTheme.colorScheme.primary
-        else -> palette.text3
-    }
+    val dot = marketDotColor(ui.statusPhase)
     Row(
         Modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 8.dp, top = 12.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -221,12 +216,14 @@ private fun SearchButton(onClick: () -> Unit) {
 
 @Composable
 private fun IndicesStrip(chips: List<IndexChip>, onOpen: (String) -> Unit) {
+    val palette = LocalPalette.current
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(chips, key = { it.symbol }) { c ->
-            Surface(onClick = { onOpen(c.symbol) }, shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
+            // Tinted like the stock cards: green when the index is up today, red when down.
+            Surface(onClick = { onOpen(c.symbol) }, shape = RoundedCornerShape(16.dp), color = if (c.up) palette.upTint else palette.downTint) {
                 Column(Modifier.widthIn(min = 132.dp).padding(horizontal = 12.dp, vertical = 10.dp)) {
                     Text(c.name, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                     Row(verticalAlignment = Alignment.Bottom) {
@@ -343,7 +340,7 @@ fun StockCard(row: StockRow, selected: Boolean, onClick: () -> Unit, modifier: M
                     Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
                 }
             }
-            Sparkline(row.spark, row.up, Modifier.size(80.dp, 44.dp))
+            Sparkline(row.spark, row.up, Modifier.size(112.dp, 44.dp))
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.widthIn(min = 96.dp)) {
                 Text(row.price, style = MaterialTheme.typography.titleMedium, maxLines = 1)
                 if (row.hasPrice) {

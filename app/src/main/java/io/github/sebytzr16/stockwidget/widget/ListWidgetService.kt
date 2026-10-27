@@ -43,7 +43,7 @@ class ListWidgetService : RemoteViewsService() {
         override fun getViewAt(position: Int): RemoteViews {
             val views = RemoteViews(context.packageName, R.layout.widget_list_row)
             val (item, quote) = rows.getOrNull(position) ?: return views
-            WidgetRenderer.fillBlock(context, views, item.symbol, quote, item.name, colors, chartWidthDp, 52)
+            WidgetRenderer.fillBlock(context, views, item.symbol, quote, item.name, colors, chartWidthDp, 36)
             views.setOnClickFillInIntent(R.id.block, MainActivity.openFillIn(item.symbol))
             return views
         }

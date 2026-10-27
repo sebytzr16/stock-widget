@@ -85,6 +85,7 @@ import io.github.sebytzr16.stockwidget.ui.components.LabeledValue
 import io.github.sebytzr16.stockwidget.ui.components.PriceChart
 import io.github.sebytzr16.stockwidget.ui.components.RowDivider
 import io.github.sebytzr16.stockwidget.ui.components.SectionCard
+import io.github.sebytzr16.stockwidget.ui.components.marketDotColor
 import io.github.sebytzr16.stockwidget.ui.components.trendColor
 import io.github.sebytzr16.stockwidget.ui.theme.LocalPalette
 import java.util.Calendar
@@ -243,12 +244,7 @@ private fun Header(d: DetailUi, chart: ChartLoad, range: ChartRange, scrub: Int?
 
 @Composable
 private fun StatusChip(text: String, phase: MarketPhase?) {
-    val palette = LocalPalette.current
-    val dot = when (phase) {
-        MarketPhase.OPEN, MarketPhase.ALWAYS -> palette.up
-        MarketPhase.PRE, MarketPhase.POST -> MaterialTheme.colorScheme.primary
-        else -> palette.text3
-    }
+    val dot = marketDotColor(phase)
     Surface(shape = RoundedCornerShape(13.dp), color = MaterialTheme.colorScheme.surfaceContainer, modifier = Modifier.padding(top = 10.dp)) {
         Row(Modifier.height(26.dp).padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(7.dp).clip(CircleShape).background(dot))

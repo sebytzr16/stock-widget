@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.2
+
+- Index cards on the home screen are green when the index is up and red when it's down, like the stock cards.
+- The market-status dot on the home and detail screens is green while the market is open and red while it's closed.
+- Home list charts are wider, using the space between the name and the price.
+- Widget charts keep their width but are shorter.
+
 ## 1.1.1
 
 - Key stats are one card again, grouped into Today, 52 weeks, Trading and Listing, with each value on its own row so nothing gets cut off.
