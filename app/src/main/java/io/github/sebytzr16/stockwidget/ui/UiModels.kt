@@ -75,8 +75,11 @@ data class PositionUi(
     val totalUp: Boolean,
 )
 
-/** One key-stat tile; [up] colors the value as a gain or loss when set. */
+/** One key-stat row; [up] colors the value as a gain or loss when set. */
 data class StatUi(val label: String, val value: String, val up: Boolean? = null)
+
+/** A titled group of key stats, e.g. "Today" or "52 weeks". */
+data class StatGroup(val title: String, val rows: List<StatUi>)
 
 data class AlertUi(val id: Long, val title: String, val subtitle: String, val enabled: Boolean)
 
@@ -91,7 +94,7 @@ data class DetailUi(
     val extUp: Boolean,
     val status: String?,
     val statusPhase: MarketPhase?,
-    val stats: List<StatUi>,
+    val stats: List<StatGroup>,
     val canHold: Boolean,
     val holding: Holding?,
     val position: PositionUi?,
@@ -325,46 +328,57 @@ object Ui {
     }
 
     /**
-     * Key stats: today's prices, the 52-week extremes and how far the price sits from them,
-     * trading activity, and facts about the listing. Optional facts are left out when unknown.
+     * Key stats in four groups: today's prices, the 52-week extremes and how far the price
+     * sits from them, trading activity, and facts about the listing. Optional facts are left
+     * out when unknown, and so is a group left empty.
      */
-    private fun stats(context: Context, q: Quote?): List<StatUi> {
+    private fun stats(context: Context, q: Quote?): List<StatGroup> {
         fun stat(label: Int, value: String, up: Boolean? = null) = StatUi(context.getString(label), value, up)
-        val out = mutableListOf(
+        val today = mutableListOf(
             stat(R.string.open, priceOrDash(q, q?.open)),
             stat(R.string.previous_close, priceOrDash(q, q?.previousClose)),
             stat(R.string.day_high, priceOrDash(q, q?.dayHigh)),
             stat(R.string.day_low, priceOrDash(q, q?.dayLow)),
         )
-        if (q == null) return out
-        if (q.previousClose > 0.0) {
-            val decimals = Fmt.priceDecimals(q.price, q.priceHint)
-            out += stat(R.string.day_change, Fmt.signedPrice(q.change, q.currency, decimals) + " (" + Fmt.percent(q.changePercent) + ")", q.isUp)
-        }
-        if (q.dayLow > 0.0 && q.dayHigh >= q.dayLow) {
-            out += stat(R.string.day_swing, Fmt.percent((q.dayHigh - q.dayLow) / q.dayLow * 100.0, signed = false))
-        }
-        out += stat(R.string.year_high, priceOrDash(q, q.yearHigh))
-        out += stat(R.string.year_low, priceOrDash(q, q.yearLow))
-        if (q.yearHigh > 0.0) out += stat(R.string.from_year_high, Fmt.percent((q.price - q.yearHigh) / q.yearHigh * 100.0), q.price >= q.yearHigh)
-        if (q.yearLow > 0.0) out += stat(R.string.from_year_low, Fmt.percent((q.price - q.yearLow) / q.yearLow * 100.0), q.price >= q.yearLow)
-        if (q.volume > 0L) {
-            out += stat(R.string.volume, Fmt.compact(q.volume))
-            val unit = Currencies.unit(q.currency)
-            // Crypto volume is already quoted in money, so only listings get a value traded.
-            if (unit.major.isNotBlank() && !q.isCrypto) {
-                val traded = Fmt.compact((q.price * q.volume * unit.factor).toLong())
-                out += stat(R.string.value_traded, Currencies.symbol(unit.major)?.let { it + traded } ?: "$traded ${unit.major}")
+        val year = mutableListOf(
+            stat(R.string.stat_high, priceOrDash(q, q?.yearHigh)),
+            stat(R.string.stat_low, priceOrDash(q, q?.yearLow)),
+        )
+        val trading = mutableListOf<StatUi>()
+        val listing = mutableListOf<StatUi>()
+        if (q != null) {
+            if (q.previousClose > 0.0) {
+                val decimals = Fmt.priceDecimals(q.price, q.priceHint)
+                today += stat(R.string.day_change, Fmt.signedPrice(q.change, q.currency, decimals) + " (" + Fmt.percent(q.changePercent) + ")", q.isUp)
             }
+            if (q.dayLow > 0.0 && q.dayHigh >= q.dayLow) {
+                today += stat(R.string.day_swing, Fmt.percent((q.dayHigh - q.dayLow) / q.dayLow * 100.0, signed = false))
+            }
+            if (q.yearHigh > 0.0) year += stat(R.string.stat_from_high, Fmt.percent((q.price - q.yearHigh) / q.yearHigh * 100.0), q.price >= q.yearHigh)
+            if (q.yearLow > 0.0) year += stat(R.string.stat_from_low, Fmt.percent((q.price - q.yearLow) / q.yearLow * 100.0), q.price >= q.yearLow)
+            if (q.volume > 0L) {
+                trading += stat(R.string.volume, Fmt.compact(q.volume))
+                val unit = Currencies.unit(q.currency)
+                // Crypto volume is already quoted in money, so only listings get a value traded.
+                if (unit.major.isNotBlank() && !q.isCrypto) {
+                    val traded = Fmt.compact((q.price * q.volume * unit.factor).toLong())
+                    trading += stat(R.string.value_traded, Currencies.symbol(unit.major)?.let { it + traded } ?: "$traded ${unit.major}")
+                }
+            }
+            q.regular?.takeIf { it.end > it.start && it.end - it.start < 86_400_000L }?.let {
+                trading += stat(R.string.trading_hours, DateUtils.formatDateRange(context, it.start, it.end, DateUtils.FORMAT_SHOW_TIME))
+            }
+            if (q.marketTime > 0L) trading += stat(R.string.last_trade, time(context, q.marketTime))
+            listing += stat(R.string.exchange, q.exchange.ifBlank { DASH })
+            if (q.currency.isNotBlank()) listing += stat(R.string.currency, Currencies.unit(q.currency).major)
+            typeLabel(q.type)?.let { listing += stat(R.string.asset_type, context.getString(it)) }
         }
-        out += stat(R.string.exchange, q.exchange.ifBlank { DASH })
-        if (q.currency.isNotBlank()) out += stat(R.string.currency, Currencies.unit(q.currency).major)
-        typeLabel(q.type)?.let { out += stat(R.string.asset_type, context.getString(it)) }
-        q.regular?.takeIf { it.end > it.start && it.end - it.start < 86_400_000L }?.let {
-            out += stat(R.string.trading_hours, DateUtils.formatDateRange(context, it.start, it.end, DateUtils.FORMAT_SHOW_TIME))
-        }
-        if (q.marketTime > 0L) out += stat(R.string.last_trade, time(context, q.marketTime))
-        return out
+        return listOf(
+            StatGroup(context.getString(R.string.stats_today), today),
+            StatGroup(context.getString(R.string.stats_year), year),
+            StatGroup(context.getString(R.string.stats_trading), trading),
+            StatGroup(context.getString(R.string.stats_listing), listing),
+        ).filter { it.rows.isNotEmpty() }
     }
 
     private fun typeLabel(type: String): Int? = when (type) {

@@ -360,37 +360,46 @@ private fun PositionCard(d: DetailUi, onEdit: () -> Unit) {
     }
 }
 
-/** Key stats as small rounded tiles, two per row. */
+/** Key stats in one card: a small heading per group, then a label and its value on each row. */
 @Composable
 private fun StatsCard(d: DetailUi) {
     SectionCard {
         CardTitle(stringResource(R.string.key_stats))
-        Column(Modifier.padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            d.stats.chunked(2).forEach { pair ->
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    pair.forEach { StatTile(it, Modifier.weight(1f)) }
-                    if (pair.size == 1) Spacer(Modifier.weight(1f))
-                }
+        d.stats.forEachIndexed { g, group ->
+            Text(
+                group.title,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(top = if (g == 0) 4.dp else 20.dp, bottom = 2.dp),
+            )
+            group.rows.forEachIndexed { i, stat ->
+                if (i > 0) RowDivider()
+                StatRow(stat)
             }
         }
     }
 }
 
 @Composable
-private fun StatTile(stat: StatUi, modifier: Modifier = Modifier) {
-    Surface(modifier, shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh) {
-        Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
-            Text(stat.label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(
-                stat.value,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = stat.up?.let { trendColor(it) } ?: MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = 2.dp),
-            )
-        }
+private fun StatRow(stat: StatUi) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 44.dp).padding(vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            stat.label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
+        )
+        Spacer(Modifier.width(16.dp))
+        Text(
+            stat.value,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            color = stat.up?.let { trendColor(it) } ?: MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.End,
+        )
     }
 }
 
