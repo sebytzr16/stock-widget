@@ -31,10 +31,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.github.sebytzr16.stockwidget.core.MarketPhase
 import io.github.sebytzr16.stockwidget.ui.theme.LocalPalette
 
 @Composable
 fun trendColor(up: Boolean): Color = if (up) LocalPalette.current.up else LocalPalette.current.down
+
+/** The market-status dot: green while open, red while closed, the accent before and after hours. */
+@Composable
+fun marketDotColor(phase: MarketPhase?): Color = when (phase) {
+    MarketPhase.OPEN, MarketPhase.ALWAYS -> LocalPalette.current.up
+    MarketPhase.PRE, MarketPhase.POST -> MaterialTheme.colorScheme.primary
+    MarketPhase.CLOSED -> LocalPalette.current.down
+    null -> LocalPalette.current.text3
+}
 
 @Composable
 fun AppIcon(@DrawableRes icon: Int, contentDescription: String?, modifier: Modifier = Modifier, tint: Color = MaterialTheme.colorScheme.onSurfaceVariant) {

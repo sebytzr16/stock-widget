@@ -1,0 +1,1 @@
+Index cards on the home screen turn green or red with the day's move, like the stock cards. The market-status dot is green while the market is open and red while it's closed. Home list charts are wider, and widget charts are shorter.

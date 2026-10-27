@@ -103,10 +103,10 @@ object WidgetRenderer {
         val symbols = u.widgets[id].orEmpty().take(kind.picks)
         views.removeAllViews(R.id.content)
         if (symbols.isEmpty()) return unconfigured(context, views, kind, id)
-        // The chart gets 0.9 of every 1.9 of the width left beside the text, at the block's height.
+        // The chart gets 0.9 of every 1.9 of the width left beside the text; it's 24dp shorter than the block.
         val (w, h) = sizeDp(manager, id, 250, 60 * symbols.size)
         val chartW = ((w - 38) * 0.9f / 1.9f).toInt()
-        val chartH = (h - 28 - 13 * (symbols.size - 1)) / symbols.size - 8
+        val chartH = (h - 28 - 13 * (symbols.size - 1)) / symbols.size - 24
         symbols.forEachIndexed { i, symbol ->
             if (i > 0) views.addView(R.id.content, RemoteViews(context.packageName, R.layout.widget_divider).also { paint(it, c) })
             val block = RemoteViews(context.packageName, R.layout.widget_block)
