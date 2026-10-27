@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- Key stats are one card again, grouped into Today, 52 weeks, Trading and Listing, with each value on its own row so nothing gets cut off.
+
 ## 1.1.0
 
 - Each widget can have its own theme (System, Light, Dark or Black), chosen when you add it or reconfigure it. Pure black widgets now have a faint outline so they stay visible on a black wallpaper.

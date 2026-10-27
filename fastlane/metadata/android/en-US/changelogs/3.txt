@@ -1,0 +1,1 @@
+Key stats are one card again, grouped into Today, 52 weeks, Trading and Listing, with each value on its own row so nothing gets cut off.

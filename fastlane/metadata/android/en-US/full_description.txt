@@ -18,7 +18,7 @@
 <p><b>Details that answer questions</b></p>
 <ul>
 <li>Charts from 1 day to all time, with drag-to-inspect</li>
-<li>Key stats tiles: day change and range, 52-week high and low and how far the price is from them, volume, value traded, trading hours and more</li>
+<li>Key stats: day change and range, 52-week high and low and how far the price is from them, volume, value traded, trading hours and more</li>
 <li>Pre- and after-hours prices</li>
 <li>News headlines and your own notes</li>
 <li>Share a stock as an image card or text</li>
